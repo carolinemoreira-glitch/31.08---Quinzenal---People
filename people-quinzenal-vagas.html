@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People · Quinzenal · Vagas</title>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300;0,400;0,500;0,700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --brand:#d0095f;--brand-dim:rgba(208,9,95,.09);
+  --bg:#0d0d0d;--bg2:#161616;--bg3:#1e1e1e;
+  --fg1:#f2f2f2;--fg2:#999;--fg3:#555;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--border-brand:rgba(208,9,95,.3);
+  --font:'Red Hat Display',system-ui,-apple-system,sans-serif;
+  --r:12px;--r-lg:20px;--r-pill:48px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:var(--font);background:var(--bg);color:var(--fg1);overflow:hidden;height:100vh;width:100vw;-webkit-font-smoothing:antialiased}
+
+/* CURSOR */
+
+#stage{position:fixed;top:0;left:0;width:1280px;height:720px;transform-origin:top left;z-index:1}
+
+/* PARTICLES */
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.28}
+
+/* PROGRESS */
+#prog{position:absolute;top:0;left:0;height:2px;background:var(--brand);z-index:600;transition:width .5s cubic-bezier(.16,1,.3,1)}
+
+/* SIDE NAV */
+#snav{position:absolute;right:28px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:7px}
+.nd{width:5px;height:5px;border-radius:50%;border:1px solid var(--fg3);background:transparent;transition:all .22s}
+.nd.on{background:var(--brand);border-color:var(--brand);transform:scale(1.7)}
+.nd:hover{border-color:var(--brand)}
+.nd{position:relative}
+.nd::after{content:attr(data-label);position:absolute;right:16px;top:50%;transform:translateY(-50%) translateX(4px);background:var(--bg3);border:1px solid var(--border2);color:var(--fg1);font-size:21.5px;font-weight:500;padding:5px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.nd:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
+
+/* ARROWS */
+#nav-next{position:absolute;right:16px;top:calc(50% + 36px);z-index:500}
+#nav-prev{position:absolute;right:16px;top:calc(50% - 6px);z-index:500}
+.arr{width:32px;height:32px;border-radius:50%;border:1px solid var(--border2);background:rgba(255,255,255,.03);color:var(--fg2);display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(8px)}
+.arr:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.arr:disabled{opacity:.15;pointer-events:none}
+.arr svg{width:12px;height:12px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* COUNTER */
+#sct{position:absolute;left:28px;bottom:28px;font-size:21px;font-weight:500;color:var(--fg3);z-index:500;letter-spacing:.02em}
+
+/* LOGO */
+#logo{position:absolute;right:28px;bottom:24px;z-index:500;opacity:.85;transition:opacity .2s}
+#logo:hover{opacity:1}
+#logo img{height:28px;width:auto;filter:none}
+
+/* SLIDES */
+#slides{position:absolute;inset:0;z-index:10}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s cubic-bezier(.16,1,.3,1);transform:translateX(40px);overflow:hidden}
+.slide.active{opacity:1;pointer-events:all;transform:none}
+.slide.out{opacity:0;transform:translateX(-40px);transition:opacity .2s ease,transform .2s ease}
+
+/* REVEAL */
+.r{opacity:0;transform:translateY(14px);transition:opacity .5s cubic-bezier(.22,1.12,.36,1),transform .5s cubic-bezier(.22,1.12,.36,1)}
+.r.in{opacity:1;transform:none}
+.underline-draw{position:relative;display:inline-block}
+.underline-draw::after{content:'';position:absolute;left:0;bottom:-3px;height:3px;width:0;background:var(--brand);border-radius:2px;transition:width 1s cubic-bezier(.22,1,.36,1) .5s}
+.r.in .underline-draw::after{width:100%}
+.d1{transition-delay:.08s}.d2{transition-delay:.2s}.d3{transition-delay:.32s}
+.d4{transition-delay:.44s}.d5{transition-delay:.56s}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:9px;background:var(--brand-dim);border:1px solid var(--border-brand);padding:6px 16px;border-radius:var(--r-pill);font-size:22px;font-weight:600;color:var(--brand);letter-spacing:.03em}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.6)}}
+
+/* TAG */
+.tag{display:inline-block;font-size:24px;font-weight:500;color:var(--fg2);background:rgba(30,30,30,.95);border:1px solid rgba(255,255,255,.12);padding:12px 26px;border-radius:var(--r-pill);position:relative;overflow:hidden;transition:border-color .2s,color .2s;backdrop-filter:blur(4px)}
+.tag:hover{border-color:var(--border-brand);color:var(--brand)}
+.tag::before{content:'';position:absolute;top:0;left:-60%;width:36%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-20deg);animation:shine 3.2s ease-in-out infinite}
+.tag:nth-child(2)::before{animation-delay:.65s}
+.tag:nth-child(3)::before{animation-delay:1.3s}
+.tag:nth-child(4)::before{animation-delay:1.95s}
+.tag:nth-child(5)::before{animation-delay:2.6s}
+@keyframes shine{0%{left:-60%}55%{left:130%}100%{left:130%}}
+
+/* VERTICAL LINE */
+.vbar{width:1.5px;height:80px;background:linear-gradient(to bottom,var(--brand),rgba(208,9,95,.15));border-radius:2px;flex-shrink:0}
+
+/* NUM BADGE GLOW */
+
+/* TILT CARD */
+
+/* TIMELINE DOTS */
+.tl-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid var(--bg);transition:background .5s ease,box-shadow .5s ease,transform .5s ease;}
+.tl-dot.filled{background:var(--brand);box-shadow:0 0 0 3px rgba(208,9,95,.25);transform:scale(1.05);}
+.tl-dot-future.filled{background:rgba(255,255,255,.15)!important;box-shadow:none!important;transform:none!important;}
+#roadmap{position:absolute;top:26px;left:50%;transform:translateX(-50%);z-index:500;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .3s;pointer-events:none}
+#roadmap.on{opacity:1}
+#roadmap .rd{width:20px;height:3px;border-radius:2px;background:rgba(255,255,255,.15);transition:background .3s}
+#roadmap .rd.done{background:var(--brand)}
+#roadmap .rd.cur{background:var(--brand);animation:rmpulse 1.4s infinite}
+#roadmap .rd-label{font-size:21px;color:var(--fg3);margin-left:8px;white-space:nowrap;letter-spacing:.02em}
+@keyframes rmpulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="stage">
+<div id="prog"></div>
+
+<nav id="snav">
+  <div class="nd on" data-slide="0" data-label="Capa"></div>
+  <div class="nd" data-slide="1" data-label="Vagas"></div>
+  <div class="nd" data-slide="2" data-label="Distrito Conecta"></div>
+  <div class="nd" data-slide="3" data-label="Pesquisa de Clima"></div>
+  <div class="nd" data-slide="4" data-label="Valores do Distrito"></div>
+  <div class="nd" data-slide="5" data-label="Pessoas do Distrito"></div>
+  <div class="nd" data-slide="6" data-label="Controle de Acessos"></div>
+  <div class="nd" data-slide="7" data-label="Obrigada"></div>
+</nav>
+
+<button class="arr" id="nav-prev" disabled><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>
+<button class="arr" id="nav-next"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+
+<div id="sct">1 / 8</div>
+
+<div id="roadmap"></div>
+
+<div id="logo" style="opacity:0;">
+</div>
+<div style="position:absolute;top:50%;right:-160px;transform:translateY(-50%);width:480px;height:480px;border-radius:50%;border:1px solid rgba(208,9,95,.05);pointer-events:none;z-index:1;"></div>
+<div style="position:absolute;top:50%;right:-30px;transform:translateY(-50%);width:260px;height:260px;border-radius:50%;border:1px solid rgba(208,9,95,.04);pointer-events:none;z-index:1;"></div>
+
+<div id="slides">
+
+<div class="slide active" data-index="0">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 72px;">
+    <div class="badge r d1" style="position:absolute;top:36px;left:72px;">
+      <div class="pulse"></div>Quinzenal
+    </div>
+    <div style="display:flex;align-items:center;gap:32px;margin-top:40px;">
+      <div class="vbar r d2"></div>
+      <div>
+        <h1 class="r d3" style="font-size:62px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--fg1);margin-bottom:24px;">
+          Team <em class="underline-draw" style="font-style:normal;color:var(--brand);">People</em>
+        </h1>
+        <div class="r d4" style="display:flex;gap:9px;flex-wrap:wrap;">
+          <span class="tag">Vagas</span>
+          <span class="tag">Pesquisa de Clima</span>
+          <span class="tag">Valores</span>
+          <span class="tag">Mapa de Talentos</span>
+          <span class="tag">Controle de Acessos</span>
+        </div>
+      </div>
+    </div>
+    <div id="kbhint" style="position:absolute;bottom:36px;left:72px;font-size:10.5px;color:var(--fg3);display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .6s;">
+      <span style="border:1px solid var(--border2);border-radius:5px;padding:2px 6px;font-size:10px;">←</span>
+      <span style="border:1px solid var(--border2);border-radius:5px;padding:2px 6px;font-size:10px;">→</span>
+      para navegar
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-index="1">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 72px 40px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:21px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:26px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Vagas
+    </div>
+    <div class="r d3" style="display:flex;gap:120px;margin-top:12px;">
+      <button onclick="openModal('modal-fechadas')" type="button" style="background:none;border:none;cursor:pointer;text-align:center;padding:0;">
+        <div class="countup" data-target="4" style="font-size:82px;font-weight:700;color:var(--fg1);line-height:1;">0</div>
+        <div style="font-size:19px;color:var(--fg2);margin-top:10px;">Vagas fechadas</div>
+        <div style="color:var(--fg2);font-size:26px;margin-top:14px;transition:transform .2s;">▾</div>
+      </button>
+      <button onclick="openModal('modal-abertas');vgReset();animateVagasRing();" type="button" style="background:none;border:none;cursor:pointer;text-align:center;padding:0;">
+        <div class="countup" data-target="6" style="font-size:82px;font-weight:700;color:var(--brand);line-height:1;">0</div>
+        <div style="font-size:19px;color:var(--fg2);margin-top:10px;">Vagas em aberto</div>
+        <div style="color:var(--fg2);font-size:26px;margin-top:14px;transition:transform .2s;">▾</div>
+      </button>
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="2">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 72px 32px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:19px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Distrito Conecta
+    </div>
+    <div class="r d2" style="font-size:29px;font-weight:700;color:var(--fg1);line-height:1.2;margin-bottom:24px;">
+      Próximo <em class="underline-draw" style="font-style:normal;color:var(--brand);">quinta, 03/09</em>, às <em class="underline-draw" style="font-style:normal;color:var(--brand);">10h</em>
+    </div>
+
+    <div class="r d3" style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px;">Pautas</div>
+
+    <div class="r d4" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;">
+      <div onclick="rcToggle()" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:15px;font-weight:700;color:var(--fg1);">Recados rápidos</span>
+          <span style="font-size:11px;font-weight:700;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">5 min</span>
+        </div>
+        <span id="rc-icon" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+      </div>
+      <div id="rc-body" style="max-height:0;overflow:hidden;transition:max-height .3s ease;">
+        <div style="padding:0 18px 16px 18px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span><strong style="color:var(--fg1);">Feriado</strong> — 07/09 (segunda) é feriado.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span><strong style="color:var(--fg1);">Marcação de ponto pelo celular</strong> — está permitido.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span><strong style="color:var(--fg1);">Limite de 3 ajustes por mês</strong> — política.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">4</span><span><strong style="color:var(--fg1);">Dissídio</strong> — o dissídio coletivo é o reajuste salarial anual, estabelecido em acordo e/ou convenção firmados entre sindicatos e empresas. A porcentagem referente a 2026 ainda não foi definida. Assim que houver a formalização, comunicaremos e efetuaremos o pagamento retroativo desde agosto/2026, para as pessoas colaboradoras admitidas no período de aplicação. Em breve traremos novas atualizações.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r d5" style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--fg3);margin:18px 0 10px;">Resultados do 1º semestre</div>
+
+    <div class="r d5" style="display:flex;flex-direction:column;gap:7px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;">
+        <div><div style="font-size:15px;font-weight:700;color:var(--fg1);">AI Factory</div><div style="font-size:13px;color:var(--fg2);">Diego Duque</div></div>
+        <span style="font-size:11px;font-weight:700;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">10 min</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;">
+        <div><div style="font-size:15px;font-weight:700;color:var(--fg1);">Ecossistema</div><div style="font-size:13px;color:var(--fg2);">Mariana Raso</div></div>
+        <span style="font-size:11px;font-weight:700;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">10 min</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;">
+        <div><div style="font-size:15px;font-weight:700;color:var(--fg1);">Estratégia e Transformação</div><div style="font-size:13px;color:var(--fg2);">Vitor Sousa</div></div>
+        <span style="font-size:11px;font-weight:700;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">10 min</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;">
+        <div><div style="font-size:15px;font-weight:700;color:var(--fg1);">Educação</div><div style="font-size:13px;color:var(--fg2);">Victor Harano</div></div>
+        <span style="font-size:11px;font-weight:700;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">10 min</span>
+      </div>
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="3">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 72px 32px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:19px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Pesquisa de Clima
+    </div>
+    <div class="r d2" style="font-size:29px;font-weight:700;color:var(--fg1);line-height:1.2;margin-bottom:16px;">
+      Lançamento da pesquisa <em class="underline-draw" style="font-style:normal;color:var(--brand);">15/09</em> e fechamento dia <em class="underline-draw" style="font-style:normal;color:var(--brand);">30/09</em>
+    </div>
+
+    <div class="r d3" style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:8px;">
+      <span style="font-size:13px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:6px 14px;">Identificável</span>
+      <span id="pc-scale-chip" onclick="pcScaleToggle()" style="font-size:13px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:6px 14px;cursor:pointer;transition:border-color .2s,color .2s;">Escala de 4 pontos <span id="pc-scale-arrow">▾</span></span>
+      <span style="font-size:13px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:6px 14px;">Comentário obrigatório por bloco</span>
+    </div>
+
+    <div id="pc-scale-panel" style="max-height:0;overflow:hidden;transition:max-height .25s ease;margin-bottom:6px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;padding:12px 0 4px;">
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 13px 6px 9px;"><span style="width:10px;height:10px;border-radius:50%;background:#e24b4a;flex-shrink:0;"></span><span style="font-size:12.5px;color:var(--fg1);font-weight:500;">Discordo totalmente</span></div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 13px 6px 9px;"><span style="width:10px;height:10px;border-radius:50%;background:#e2954a;flex-shrink:0;"></span><span style="font-size:12.5px;color:var(--fg1);font-weight:500;">Discordo parcialmente</span></div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 13px 6px 9px;"><span style="width:10px;height:10px;border-radius:50%;background:#a3c644;flex-shrink:0;"></span><span style="font-size:12.5px;color:var(--fg1);font-weight:500;">Concordo parcialmente</span></div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 13px 6px 9px;"><span style="width:10px;height:10px;border-radius:50%;background:#4caf7d;flex-shrink:0;"></span><span style="font-size:12.5px;color:var(--fg1);font-weight:500;">Concordo totalmente</span></div>
+      </div>
+    </div>
+
+    <div class="r d4" style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--fg3);margin:18px 0 10px;">Blocos avaliados — clique para ver o que muda</div>
+
+    <div class="r d5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+
+      <div class="pc-item" data-i="0" onclick="pcItemToggle(0)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Liderança Direta</div>
+          <span id="pc-icon-0" style="color:var(--fg3);font-size:12px;transition:transform .2s;flex-shrink:0;">▾</span>
+        </div>
+        <div id="pc-desc-0" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Avalia alinhamento de valores, conhecimento técnico, qualidade do relacionamento e clareza do feedback da liderança direta.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="1" onclick="pcItemToggle(1)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">C-Levels</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span style="font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:10px;padding:2px 8px;white-space:nowrap;">NOVO</span><span id="pc-icon-1" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span></div>
+        </div>
+        <div id="pc-desc-1" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Adicionamos: bloco passa a ser medido separadamente da liderança direta, com relação de confiança própria.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="2" onclick="pcItemToggle(2)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Cultura e Segurança Psicológica</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span style="font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:10px;padding:2px 8px;white-space:nowrap;">NOVO</span><span id="pc-icon-2" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span></div>
+        </div>
+        <div id="pc-desc-2" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Adicionamos: bloco próprio de Segurança Psicológica, antes diluído em uma única pergunta de cultura.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="3" onclick="pcItemToggle(3)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Comunicação e Pertencimento</div>
+          <span id="pc-icon-3" style="color:var(--fg3);font-size:12px;transition:transform .2s;flex-shrink:0;">▾</span>
+        </div>
+        <div id="pc-desc-3" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Avalia se as comunicações internas chegam de forma clara e no tempo certo.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="4" onclick="pcItemToggle(4)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Carreira e Desenvolvimento</div>
+          <span id="pc-icon-4" style="color:var(--fg3);font-size:12px;transition:transform .2s;flex-shrink:0;">▾</span>
+        </div>
+        <div id="pc-desc-4" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Avalia evolução, protagonismo de carreira e clareza sobre responsabilidades e expectativas.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="5" onclick="pcItemToggle(5)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Reconhecimento</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span style="font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:10px;padding:2px 8px;white-space:nowrap;">NOVO</span><span id="pc-icon-5" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span></div>
+        </div>
+        <div id="pc-desc-5" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Adicionamos: reconhecimento entre pares, além do reconhecimento vindo da liderança.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="6" onclick="pcItemToggle(6)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Remuneração e Benefícios</div>
+          <span id="pc-icon-6" style="color:var(--fg3);font-size:12px;transition:transform .2s;flex-shrink:0;">▾</span>
+        </div>
+        <div id="pc-desc-6" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Avalia satisfação com remuneração, benefícios e adequação ao nível salarial.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="7" onclick="pcItemToggle(7)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">Ferramentas e Recursos</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span style="font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:10px;padding:2px 8px;white-space:nowrap;">NOVO</span><span id="pc-icon-7" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span></div>
+        </div>
+        <div id="pc-desc-7" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Adicionamos: bloco inteiramente novo sobre ferramentas, recursos e eficiência dos processos internos.</div>
+        </div>
+      </div>
+
+      <div class="pc-item" data-i="8" onclick="pcItemToggle(8)" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .2s;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--fg1);line-height:1.3;">eNPS (0 a 10)</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><span style="font-size:10.5px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:10px;padding:2px 8px;white-space:nowrap;">NOVO</span><span id="pc-icon-8" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span></div>
+        </div>
+        <div id="pc-desc-8" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="font-size:12.5px;color:var(--fg3);line-height:1.55;padding-top:8px;">Adicionamos: métrica comparável a benchmark de mercado, acompanhada em toda edição (inclusive pulses).</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="r d5" style="font-size:14px;color:var(--fg2);border-top:1px solid var(--border);padding-top:14px;margin-bottom:16px;">
+      Devolutiva para as lideranças: semana de <strong style="color:var(--fg1);">12/10 a 16/10</strong>
+    </div>
+
+    <button onclick="openModal('modal-perguntas')" type="button" class="r d5" style="display:inline-flex;align-items:center;gap:9px;font-family:var(--font);font-size:14px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:16px;padding:10px 20px;cursor:pointer;width:fit-content;">
+      Ver as 10 perguntas do questionário ↗
+    </button>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="4">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 72px 32px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:19px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Cultura e Valores
+    </div>
+    <div class="r d2" style="font-size:29px;font-weight:700;color:var(--fg1);line-height:1.25;margin-bottom:26px;">
+      Mapeamento dos <em class="underline-draw" style="font-style:normal;color:var(--brand);">Valores do Distrito</em>
+    </div>
+
+    <div class="r d3" style="display:flex;align-items:flex-start;gap:12px;background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);flex-shrink:0;margin-top:2px;">Objetivo</div>
+      <div style="font-size:14.5px;color:var(--fg1);line-height:1.5;">Mapear e definir os Valores do Distrito, buscando maior alinhamento entre cultura e negócio.</div>
+    </div>
+
+    <div class="r d4" style="display:flex;gap:12px;">
+      <div style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);margin-bottom:2px;">Conduz o projeto</div>
+        <div style="font-size:18px;font-weight:700;color:var(--fg1);line-height:1.3;">Carol Moreira</div>
+        <div style="font-size:18px;font-weight:700;color:var(--fg1);line-height:1.3;">Letícia Pádua</div>
+      </div>
+      <div style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);margin-bottom:2px;">Entrevistados</div>
+        <div style="font-size:18px;font-weight:700;color:var(--fg1);line-height:1.3;">Gustavo Gierun</div>
+        <div style="font-size:18px;font-weight:700;color:var(--fg1);line-height:1.3;">Gustavo Araujo</div>
+      </div>
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="5">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:36px 72px 28px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:19px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Pessoas do Distrito
+    </div>
+
+    <a href="https://docs.google.com/spreadsheets/d/1roR18cYLCJj87HehFjxvuKyhUX0vFZYKVERLOsz3Dq4/edit?gid=1055002786#gid=1055002786" target="_blank" rel="noopener" class="r d1" style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:16px;padding:6px 14px;text-decoration:none;margin-bottom:14px;width:fit-content;">
+      Abrir planilha completa no Google Sheets ↗
+    </a>
+
+    <div class="r d2" style="display:flex;gap:8px;margin-bottom:12px;">
+      <button class="pd-lens-btn" data-lens="t" onclick="pdSetLens('t')" style="font-family:var(--font);font-size:14px;font-weight:700;border-radius:20px;padding:9px 20px;cursor:pointer;transition:all .15s;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);">Talento</button>
+      <button class="pd-lens-btn" data-lens="g" onclick="pdSetLens('g')" style="font-family:var(--font);font-size:14px;font-weight:700;border-radius:20px;padding:9px 20px;cursor:pointer;transition:all .15s;color:var(--fg2);background:var(--bg2);border:1px solid var(--border2);">Grade</button>
+    </div>
+
+    <div class="r d3" style="display:flex;gap:9px;margin-bottom:10px;flex-wrap:wrap;">
+      <input type="text" id="pd-search" placeholder="Buscar por nome ou cargo..." style="flex:1;min-width:180px;font-family:var(--font);font-size:13.5px;color:var(--fg1);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:9px 14px;outline:none;">
+      <select id="pd-filter-area" style="min-width:150px;cursor:pointer;font-family:var(--font);font-size:13.5px;color:var(--fg1);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:9px 14px;outline:none;"><option value="">Todas as áreas</option></select>
+      <select id="pd-filter-senioridade" style="min-width:170px;cursor:pointer;font-family:var(--font);font-size:13.5px;color:var(--fg1);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:9px 14px;outline:none;"><option value="">Todas as senioridades</option></select>
+      <select id="pd-filter-dim" style="min-width:140px;cursor:pointer;font-family:var(--font);font-size:13.5px;color:var(--fg1);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:9px 14px;outline:none;"><option value="">Todas</option></select>
+    </div>
+
+    <div id="pd-count" class="r d3" style="font-size:12.5px;color:var(--fg3);margin-bottom:10px;"></div>
+
+    <div class="r d4" style="display:flex;gap:22px;">
+      <div id="pd-chart-box" style="flex-shrink:0;width:250px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <svg width="170" height="170" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg3)" stroke-width="22"/>
+          <circle id="pd-seg-otimo" class="pd-seg" data-t="Ótimo" cx="90" cy="90" r="70" fill="none" stroke="#4caf7d" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 90 90)" style="cursor:pointer;transition:stroke-width .15s,stroke-dasharray .4s;"></circle>
+          <circle id="pd-seg-naopodemos" class="pd-seg" data-t="Não podemos perder" cx="90" cy="90" r="70" fill="none" stroke="#e24b4a" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 90 90)" style="cursor:pointer;transition:stroke-width .15s,stroke-dasharray .4s;"></circle>
+          <circle id="pd-seg-regular" class="pd-seg" data-t="Regular" cx="90" cy="90" r="70" fill="none" stroke="#999" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 90 90)" style="cursor:pointer;transition:stroke-width .15s,stroke-dasharray .4s;"></circle>
+          <circle id="pd-seg-critico" class="pd-seg" data-t="Crítico" cx="90" cy="90" r="70" fill="none" stroke="#e2954a" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 90 90)" style="cursor:pointer;transition:stroke-width .15s,stroke-dasharray .4s;"></circle>
+          <circle id="pd-seg-novo" class="pd-seg" data-t="Novo" cx="90" cy="90" r="70" fill="none" stroke="#5b8fb0" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 90 90)" style="cursor:pointer;transition:stroke-width .15s,stroke-dasharray .4s;"></circle>
+          <text id="pd-donut-n" x="90" y="83" text-anchor="middle" fill="var(--fg1)" font-size="28" font-weight="700" font-family="'Red Hat Display'">0</text>
+          <text id="pd-donut-l" x="90" y="105" text-anchor="middle" fill="var(--fg3)" font-size="10" font-family="'Red Hat Display'">Distriters</text>
+        </svg>
+        <div id="pd-legend" style="display:flex;flex-direction:column;gap:5px;width:100%;"></div>
+      </div>
+
+      <div style="flex:1;min-width:0;">
+        <div style="max-height:400px;overflow-y:auto;border:1px solid var(--border);border-radius:12px;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr>
+                <th style="position:sticky;top:0;background:var(--bg3);color:var(--brand);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 16px;border-bottom:1px solid var(--border2);">Nome</th>
+                <th style="position:sticky;top:0;background:var(--bg3);color:var(--brand);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 16px;border-bottom:1px solid var(--border2);">Área</th>
+                <th style="position:sticky;top:0;background:var(--bg3);color:var(--brand);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 16px;border-bottom:1px solid var(--border2);">Cargo</th>
+                <th id="pd-th-dim" style="position:sticky;top:0;background:var(--bg3);color:var(--brand);font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:10px 16px;border-bottom:1px solid var(--border2);">Talento</th>
+              </tr>
+            </thead>
+            <tbody id="pd-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="6">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 72px 32px;">
+   <div style="width:100%;max-width:1150px;">
+
+    <div class="r d1" style="font-size:19px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+      <span style="width:22px;height:1.5px;background:var(--brand);display:inline-block;flex-shrink:0;"></span>Controle de Acessos
+    </div>
+    <div class="r d2" style="font-size:29px;font-weight:700;color:var(--fg1);line-height:1.25;margin-bottom:22px;">
+      Gestão <em class="underline-draw" style="font-style:normal;color:var(--brand);">centralizada</em> de acessos
+    </div>
+
+    <div class="r d3" style="display:flex;align-items:flex-start;gap:12px;background:var(--brand-dim);border:1px solid var(--border-brand);border-radius:12px;padding:16px 20px;margin-bottom:26px;">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);flex-shrink:0;margin-top:2px;">O que muda</div>
+      <div style="font-size:14.5px;color:var(--fg1);line-height:1.55;">Gestão centralizada de acessos a todas as plataformas, unificando a visão de pessoas, custos e permissões entre People e Financeiro, com maior visibilidade para as lideranças.</div>
+    </div>
+
+    <div class="r d4" style="font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--fg3);margin-bottom:14px;">Fluxo</div>
+    <div class="r d4" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:26px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--fg1);white-space:nowrap;">Solicitação</div>
+      <span style="color:var(--fg3);font-size:16px;">→</span>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--fg1);white-space:nowrap;">Aprovação</div>
+      <span style="color:var(--fg3);font-size:16px;">→</span>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--fg1);white-space:nowrap;">Concessão</div>
+      <span style="color:var(--fg3);font-size:16px;">→</span>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--fg1);white-space:nowrap;">Revisão</div>
+      <span style="color:var(--fg3);font-size:16px;">→</span>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;color:var(--fg1);white-space:nowrap;">Revogação</div>
+    </div>
+
+    <div class="r d5" style="font-size:14px;color:var(--fg2);line-height:1.5;margin-bottom:26px;max-width:820px;">Controle centralizado de todos os acessos dos Distriters.</div>
+
+    <div class="r d5 badge" style="width:fit-content;">
+      <div class="pulse"></div>Disponível a partir de 15/09
+    </div>
+
+   </div>
+  </div>
+</div>
+
+<div class="slide" data-index="7">
+  <div style="position:absolute;right:-180px;top:50%;transform:translateY(-50%);width:520px;height:520px;border-radius:50%;border:1px solid rgba(208,9,95,.06);pointer-events:none;"></div>
+  <div style="position:absolute;left:-180px;top:50%;transform:translateY(-50%);width:520px;height:520px;border-radius:50%;border:1px solid rgba(208,9,95,.06);pointer-events:none;"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:22px;">
+    <h1 class="r d1" style="font-size:76px;font-weight:700;line-height:1;letter-spacing:-.02em;color:var(--brand);margin:0;">Obrigada</h1>
+    <div class="r d2" style="font-size:23.5px;font-weight:500;color:var(--fg2);">Team People</div>
+    <img class="r d3" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAACQCAYAAAD+xJlyAAAqyUlEQVR42u2debxcVZXvv/ucuvcmIUASRkERGaQNgwoyCD5EUJyYHIKoIKg0LWPg2c79+uY+9TmDGAWbtp1ABQLY4oQgyKCg0DL0g4iiInMkkBASktxbdc7uP9be1Elxh7pV+1SdU7V+n8/53LH22fNvrbXXWhsUCoVCoVAoFAqFQqFQKBQKhUKhUCgUCoVCoVAoFAqFQqHoERjtAoVCoSjE3ml1n265j0KPbTROv9tJ6mAm+P/so4SuUCgUCkWOHOgJ3AJJTu+JMu9I8yJ4JXSFQqGYPoZy2D/H3GbfiEFHBv2O1PVRSIKtjfO3rYAXAC8Eng9sDWwBbAJs5MZjEIiBUVfGWmANsBL4O/AI8BDwoPt+bcM74kybgpG7ErpiupKsaWHuNJqdrHanoqRrwAKzgV8D89zP7e6jqSOXdwC3uM0+ybzvcmBv97u4T4k8Av4AvL7NsuKMluzHdHfgVcD+7vvtHXmHQA14DLgXuNXNm9uAJzP/U3Fj2/a+WGlBqjFdXlCTkUVRiCKPfko72L6sGYrMZAv1/jizWdkJtJJQ7VDNpvPzBwsGhg0sNTB/nLWwtKtr1bAkaXN9vyjgpu8xa4LfP99pjP2OZ9ocM7+XAewBHA0c7kh8vPPv8daMmUJxaXxnxY3dC4DXud8vB24AlgA/zbQrbnedVlrYFIoOTxZpF0k+LeFiyTqC1MYh2pmI2Wkr93Vzt6FtjJgfh9znx9yzDliNmKCWA4+75wmee05lMpM5ZN/leSam2KCjhyPY1cA9BkgNIymM9LIlZr3T1ENq6BPNfW+K73cNfbQNTvD7wOuBM9zXuEGTzipjJlBfNyqckds/3+6e+4FvA193+yNTzIUghO475D3AW9z3ndR8PEGvR84ingZWIGcVjyJnFA87M0YyThtzdUQYB2c7CT4NtNhj4GvALxsmZ6i+jd2E9uUOAPMRM99ewK6IGWoLYEYb73oKMT/9BbgT+B1wuxvDxgXVrgaVuvp/vAvztWibYQx8Abg55PwREieCRYnBpBv+7aRZUNkG4m3BbgPmecBmYOc6IhwCMwi2w6QfA+lqGDzF8KVnLBjT2r6QdXIKYY2LmhC2bR/P41asniazl7wc+BTwpgYS9+VWcqq3mUT7x/HECHAy8EXgXFevltZpZRqVwm3uRxV0wFciDgh3I2cVNwP/zYZOFG2bNJrEkcAOgcu8xhG6CTjRIjdpao7ED3IC2yHAiyeROKfTh1nz/Rz3vAQ4zP19NfB74Mfuua/hc2mLbcOZuY5CAWLeuznE/LEsiKWTRxIZnxEsZ2wH0T6Q7C+bp9kJ0q2hUqkbzbJTqDt2BKnLuiqsPZP2TLiK4gsAfp/6GDAsQuSzv4tyJPFmlSgvcKeI490Xndb+T467KozvtNc2oXuszRBApQurcbLOmeuelwLvdn+7z5HgZcD1GYkntJY7niaaZExF7cD39WgOkz1BTOfvBU5wWjnjmKFMwxO3MYbZxyAm+4Pc82ngKmd++kVmB25VCBtzbexXUyWZto+1vwCHowyRYzl5Bxg8AuyRYg2JNxK5MMnIYdUUanZ8Tdx02B/HWoiMCP+D6pjZ+2S+MfDdjFBfxH0ga+lJgP2A3wAnApdMl9RbcYqLMxttkdDoYFUBdnbPyYiJ99/dAK9pUwOcCjF1tSQK0K44oGbuJ8gQcpZ0JrBNg7QY5STBTmZ+sog5/yj3XOtMUTc1LNJWJeF+JXRCzB/LgrhO5Ge8CsypYA+HwY3qMv5YIqRpDFgjX020odGk23uEMWD7eS70C5nPQxzO9gOqbi8r8rh7s3+CHEld7Npw/nRIvZfOY0yGhCoZgqq5ry9DzqHvcBqpJ5J+Wtz+rPwA4LfA5x2Z1zJEXqHz/hExdV8Hr94dAtyInClt1IdjVRAp2RqLNYYlieWM3SxnXgbRTTBwjIzLuhpUHZETg3Ebp+l2RIyi/+AVhiHgygyZD5RoLnqLZAKcBxxP/Uy9rwh9ovZVMlJbDdgJ+CZwtdPeE7p3ltJp0kyAhUjIxMuoe7NXCjIXfD2jDLGf4bT0XfpkrApE5sORwViDsZYzPgrmVqi8TUzo6702XiGsBUmhaIcME8QSe0CGzMvIW34P/AbwSpo8Lugnj0lP7p7YX+e01CPojk9ANyb654EvZyZLpcAbsSf2KuKheiOwz3SkVUW7ZD6SWk6ea1n4Yxj6DKQzhciNAaMkrijaflFD/KeOKzGZZ5Ub3B59IeIPMGVERT+GQHhiT5Azih8B/9jDpO7PXz4LfMhNdEpEit7LakvEYW4P+jsMrYNkfuo2MHg9DB4G66uyoRgVphRFJD8LbAacQ+8cz3khZUfES39KJ+t+3hSziUwuQGLse0378xPiJOAj1J1DTAnbkSBRDD9CPPP7ff7mRuYwYi2nbgaVX8DAHhLmVapzSEV/7uX/jOTKSHtob/BtOw05Lp60bf2+IWbTAX4TyefbKyFO3qy+K/AVim9ib1Y42R45V0pRgglM5rhUrcMGokthcDdYXwMzoL2jKLB2XnNE/gGKGYHVbvtSxNHvg0xhdlcNp94HMfA9JPFJqOxPRZgM/+YmAz3QJn98cCRwDP0dX54DFkSS4/yJRTDzYDGzG3VCVBRd0Ad4p9u7kxz3OR8Z5eM0fXbNIBerTNFG6/a8zSdroxL6htrfdshZc9lNNt757x2It2cvHSX4JAyfoR7Oppp62zvVglhC0055GQx8XJzfNKKgIMgSSOgnD+RV12SCvgF4V46KmHXv96HRPszWR3hk7w/JI2GZL3sO4sTNRPu5LtgNST1BHOS+DtxF/hnl8twAKsAnesjakCX0BDG9H+ssEJUcN6c+wXynYZgvQhxDLel8JjfFBJjLhvk1yqBQ5IF54+wFKXK2vCf53K6YZAi8hmQf/Rtyb0gV2BTJ5bETdd8er2SEXD8+cdpRyPGwVUKfWgryk+QTwIKSCyaHALuRv1l6vDvOQ0/mid57KnKerjeqta2djySWhQdCfAiMpurNXpChEXwOuUI1lHDuvcLnIo5kcWDB/xzk4ixDGFO0r9vyCQj9QMRpM3Skkt87lwGLgSscoY+332yGWEM/ALyxod6h9nWDJMvZGLkD4zn9WynIpE2nMRHzJAs/sY9AQgX+QhtX2XUZx5Pv9bHZvPgwfkpXH14W5TBOKXKP8b5MfIuYr0MehJ9HJrQ87oZPxhG4JkC6EAZ8HXI8crKWhtvZmhjvfsb3cip3DnBWDv17DvBQB/tn/5z2txi5U+K9yC2RjLPn+fXyJJKd7kokDv4CxHcptBC2hVPUbqFurSwUobdy2UeSk3nFlz2InMl8smSE7q8K3ARJnGNyWKwpz70taDmwCjFBbYSYxjbJzK8kp3pEyO1wE90iNkj9jKss4xe6rnGmL8aRIIYj0c7P2hZqb4Axk5N2bsG6eRAbMeub5j72bOqEvkXoJD5+T9s8p/pu5ggw9N5pGwjMf7/7BEpFu2T+G6fcjVHPh2EnUBBMRsi/0O2HPySs170/St3DEfpz2ttNQveSyyPIxSlTmWc2Rs4qXkg9A1AeZxVeSDgKuT+3TOZcL7Ht6xZraE0rW95VyG1Av0Puon+GenjFHOT61UORc+7tc6iLL+tgnnt/up9HDyMXNIR8t5+nuyNOlCEkcF/Gw4jvRihTZXbMHpxAU3ebbvVNMHMWrEtyIPQEohgGKu7agGVQfRjsE2AmWF/WgLEiHJpXulzx/Xqmn+SwT/iMmXnAO7HlqQz5NTLbcQKB1ri/WnU98D5H5pUmpMos0Q86Tf185FgwtELzkon+UOnyJK0g15ue0ORnBtzgHew6e9+GDTEkUeyBODrcVyIt3WRMUKFNp76sB5BENVdP8H+jyPnZ35Ec7F8A/gXJUhdSADOZyb2NEwz9OPmxupX6veuhsRhJ9hDCG9yX8Qvk2sQOksNS7wz3BkeagY9obAJDMVRXQvXbYC6H9XcbLljV3O56xt4Q3wpVq056inEIfUtnEQjNSz8E/kRrDrdemPmc46kZgTjKf377CYTzQpjcs2bRZAoJqAr82T0XINeinkPYs4rsoO5XMkL3A7xnYMuFJ+IHEAeUB9kwVMOOI1h589PTwIeBR91YhZJW/btnIslzHhmnvXkcy/gFPpjjWsjDa/85d8oLQy5JLMfPALs31EL3VwIzYhi7EjjdcO6D2XfDgsne5fYDO1u5SzEJuW1O/abGkIrCZW2U55WfhxCz/WsDa+lbZd5TOELPmiqSJjrbZAj2fOCvzrwRE85RyW98eyPnIWWBd0LbuWFyhhqn4xyZDzpT1GR9l2TqUEEuhdkPiY0PNbn9wvkHZzEwk8ytkBtJXokkfH0NHTnqGTYwYmGTHYBt3asDEXqawswYRr9vWPxuadxwRSwCS1IDFpYkE3fEAkTYOL2MDqmKzmHOOMpEO+vP5yS5i/acVH2+jFscodtAew9IqJzJtNlmX1om+A7293cPImbKT1D3fA4p/e06kSRUYIl1TkaCC0HoXkj4MWJCr0xC5pONmUFM72OZyR4KO+q+1gqud+vf7AKDUTghwqYwaGDsXuB9luHIhcbVDEsSk29WLUV/aeizGxSJEHgSeDxAuRaxJofGTCa4Sa7smeKqjsi/7DouFKn7ybJdpkxTkgm+mZPgQuPbbfSB1zr/DPyaurk8FLbJYVH3AQ7yU2cnJ2MF6j9jITKQ/Ith8SjgUsoqFMER0tnMz/81iFNciLJWBlSufBmDTGBdLzuhe5NDDfhuQG06ez4zp2R9ModwiSK8CWodcBvtmbD9ccj1AcnXt2+eEno7SLcLuCRTCUkbfRCin8hZ+YiSuaKM3BICoznUbcKj5ahHOt4A1+Qgsc3OaLtl0dA3CjghfRmPIF7rIcq7N4f+zMPs1gfwHu52y4Bdl4ryEN0g2vmCSE3sCkVn0AuE7r13/4wE84eI4fVkU0Hi38uEPLyvV1K/nKDVvvWfeyIgofsyhpTQW4HP386mTi4OJGQZwN7p3qGhZgqFEvq08VSGLEJqpzNKoqGTA7n5MsYC1i8PB0Mljfa6b2Y4WcgYd+nUw9qvCoUSequkU0POekOXO1Cy/sgj+5MSpu4D01w60Wr5fqlaTRQKJfTiqC8lq+9YwHo3mrQViqnI3M0Zo45wCoUSuiKAehQaekatUCgUSuiKLmnoIbER9aMHNb8rFAqFErqiA5r5aEDi9WVsQj0cTqFQKBQ9QOgztMsKj7U5aNKbUr/RSDV0hUKh6AFCV42+HIRebdDa29HQUyQe/4VK6AqFQtE7hK4oLrJ5iNcGLNfHje9O2CtZFQqFQqGErpgEq90TQkPP4gBXnnq6KxQKhRK6ogMa+nrk+r9Q8LnxD0RypieqpSsUCoUSuiJfePJ9LKCGbhyJbwUc6n6OtasVCoVCCV2RH7zmfH9AQs/iNNTsrlAoFEroio7hjzlo/inwGuBgp7Grlq5QKBRK6Iqc4DXnu3MYX1/22Rky17N0hUKhUEJX5AAfYrYUCV2LCGcej51m/lJgkfu+ol2uUCgUSuiKfDR0gzjFLW0g+VDzpQb8C/AmJIGNkrpCoVAooStygDeH30B4Bzbj5kwKfB/YwxH8dEk9zeFRKBQKJXRFz2npAD/LEHAec2ZT946dpknqkXsqme9bfXwZM3XYFQpFv0PNpb0Hr63eDDyA5GBPAxN7hJyhbwtcA7wB8ayvOHKfrF63I97yKe071VlXl9U67AqFQgld0YsaegXJGHcJ8OEcCB3qTnLbA9cBhzuynojUveVgFXC9DpNCoVCEhZrce1tL/wYwRn4x457UtwGuRWLUa8DAJJ/xmeZCPjqPCwNj3SV9g9oXCoUSuiIMocfAfcDljkRrOZJ6CsxBztTfzuTe79YJASEfdYprCzYJWZg7SdlEfpyvuQoUCiV0RfsbKwb4pCNYQ34pW73n+yCwBPgn6o5yuqEXFkvd2Ji14YbJTzuzvdWxVyiU0BXBtPQI+ANwHnXzeN5zKQW+DnzckXqkpF542W+Vk/cCCHzGOLlxT/lmqeb9VyiU0BUBSf1fgQepm8fzgqF+O9unkTSxic61osKbw6PHA2rokTMI/S/LhzaGJWmPauo2h0fb0Ztt6Fj9dJPtcdXLEezTwInu+zTnRedj32vAWcB3qJvkdb4VU+57OODwG0gSGNoS1r5DtPSTejGaZiAz102bT5z5vpMwgdthutAO/75KwHEYKGj9oqnqp2FrvQ+fc/0a4FNI2tZq4Ek73iT24WvvAeYB70Dyy+dt+ldMH39xaQFMuPGvWYiHLQsvM5z7lGW4Yhip9Uh/WeCJjLbUbr95Ybfahb1hOeL7EqIdHp0c51FgJWFugPTj8GTA+o0FrJ8foycmUsqU0PuL1P8PcrnK4bSWsnW68KR+GHA1cJSbjErqBVHN3TD9EaopwcIbTQS1FIaeD9WLLQuOMIyMWYYrcqY+38KINd0zM7ezoQKsAfYhjMXJZoTgpzPrtQPjziPA/EBEnh3LVQ3vyWtPA/g5sHMggcSXkWSEEttm/X6dQ/1SYN149au0UGCo/Nm+DBt4oobK7Z0WqB7t9pMPFYuAdyGJXfai7rSWJyInpR6AJKA5DDnPjyh3uFnR10ITGHHvM3+F9DGobCtEbALMCRPBWAKDr4dtrrOcdqph5K6GDjQwbGCRhUWNm52xDEfwRJHO37N1WVniuWsy825Fietv3N7yZEHrh7O6dKx+0yX0IbcRh0gaMZgpMxRmUc/zHYKIaLGskPXw/dSuidxLd2scqV4HvKRD88y3YXckm9wRwC0lJ/Wir4Vmdh1rWRAbzllnOe12IfQkpFARw2gCgweAvdWy8FJILwN+D6N/N1xQFaFiZDxNKJVfnjpaQA09r83faju6Vv+Qbeha/ZoldG8++BKSTjRkHu5lAc0z7wZmB+xQA9zVQv2OAzYOVA/fT/c2jEWrmqDv8wOR29JCjGWzfVlDLlIZpXzm1sa18DngosBr4bEAYzxNPJv45Sowh0voWsjpYGIYS8EMwuCxkB4L1bUw+JjltBVgJjhvtUayzrGJdIfplkOlFzr3Bs4lrOl0BXA04luS9xr0x1yvQSJQQjip+nY8AhzjyjcdaMPHkGPDEOfSvoxfItFA7SgZvn6nA+8MXL/rkVDgSetXabKSfpD+5J6iSF2mocNu7ZJU2FiP2woqnXpPyQpyln1dD2o8eW+Kfi380T1l7xe3OaQ/hdGzIRpy8egBN2YTSZvWp85hdxbEO0K0Y3Nd0VVfOt8P84BXBi57DZ3zY/Lt2CqHdizroFIAYlkM3Ya/j6MFt1q/F+dQvxXN1K+ZyZSXthBnVmyrElFeqz2bDKWZs808d514GvUo+u7oCbGsd5gXeS20uAONpJbhyDDygOW0a2HGGx3xxsFf9WyZ1ooXvGliPlvTRe08ixr1NMOhNNvVXRBqq9RTJofyCu/0bYfrqDuuVQKMa8VZSUJhfbfqV5lC2rDAmcDzCRuecTntnaH6us0DPurKabd+/vOrgM/SXLpU//e5wEdcf4bUbr6YkX7bWfi+n/8BOA14hs5lcPMm6WXIkQ2UNx79fyMX0YRcC5cilqUu+hPs6tpivwL2TR2YFqb5ELnC+MRl45RDEXrUxXYQgNB9GzrdjsjV3RImFCz0BU+mW/VrRno4Fdgp8IA8HIjQ5wIfykH6O5vmYkJ9PeY4Qg+NCwMRuj+j/ZuTHD/cpU3xFUhcepVyOsSdjlwXGxJ/7TahG45OxKN85Go49WaYsb84s5kYhUJRGjRD6Cuc2h/C1BTavJE480YIzdi3b3kL5Jk4rXeIYiZo8Akw1gMLgb8AX84ILZ2QsC3iODMPuZFtNeWLR1+BWKtCroV1xWjaUmMgtUQfhPQWZw4PfJauUCi6Teix+79QqTsrAQnEZyQLSeiVLtejsdw8xvwrSBztt6jnd+8EqdeAQ5G7049w1ocKXfZ6mgaKvBbanGhLEglhW/xby+lfgJkfgrVVMAMoFIpSQHNr9x+8ZnghEvqxxs2DTmjKnrz3Bm5AjnI6kbFO0RSWpJYFMcz7OKz/FcwcAFvVflEolNAVxSb1ASRt4mudphx3SFP2pP5i4EbkXF1JvRBaOhYuTWEkgerbYOwOmDFA53OMKxQKJXTFNFB1JPo74CAkv0CnzN8VZxF4HmJ+f62SelFI3VgYNobzV8K6Q6F6k2jqJGBT7SGFQgldUVxNvYIkSHk14m1d6ZBG5h3iNgF+htzGpqReCFL3sekXPAHp62D06zAYw0AEtqbErlAooSuKS+oxYnZ/LWKGH+iQpu4d8irAxcid7f44QFEIUl88ajj3ZBh9C9g/wMwKVHTfUCiU0BUFhb+JbTXiKHcRnTO/+zmYAv8OnEz9OEDRdVLHiPf7V/8T1r4CxhaCvRdMQnnz8SsUSuiKnoYPxUqRy2XOpn7WnffGbajfQ3weknxGze+FIHVsPaTtgrWGc78C6/YAboMBP2YKhaIA0A1T0UjqPm3hB5EkO5+hnsEszyQjPo1kgsTHL0fM/2WKU+9hYhdSl9vZHt8a7G5uWEIqBYm7GCb75saLjxQKhWroiibhLwipIDntT8xo0Hk7Q5nMcwkw35G5ztNCYL4xjNQgfifMmA1pLaCQZ8XxbmYFZmSeQSVzhUI1dEWbpO5N3v+BXLX6A+Qu8xC3NE0lZCbIffJLgH2QlLXt5rNXtI1FiYUInjxWpocJSOaRgbGfgH1UcsinyDm92QaiwyDVNLQKhRK6og14Uv8RkrL1CmAL8j/f9klu5gPnOitB2fK+95iEtyA2mMRy+ithYHeohrpi1ZF5+jjMe4tYALJ/PHNPMIdBYgMKEAqFErqir0n918BrgCuBHTpA6v7s/P1OkPiZkno3sQAxmPAel6ogUD57m8BgBdb/yDBSs5w+BPMSWBHL1yfnaBSjQtEc9GxSMR1SvwdJQHMHnXFW8/fcLwZmobd/dUk7x8gVqydtCvatMEbAq1Uj5yZxkfy4rCZauv9qVIBTKJTQFTmQeozcZf8a4JcdIHV/nr4DcBpysKpOUh3HsOvzGW+GGVtAkoQRrGwq2eeqf4I5N4vgsEQJXKFQQld0AD4BzSrgzYgneidI3SJhdHNcHVRL7yxcdEN6QmAjSepuHL5EtPFhFdYUCiV0HUenuYZ8zCSbe4RkczsG+GqG1G1ObUuBLYHj3Tt04+8QJP3rSGo5ZSeIXg1jNty+YWIYTSC6eEPBQaFQKKH3twaVBH7s1BobEXA6MOJIPc2J1H3I2knUs9cpOrpHVN4JQ4PixBZERU8k05z9rWHxUi84aHcrFK1DvdzLDe/1fSJwGHWTeLvCQYyY03/AxJ7lNjOHFgFrgc9RP2sPaRb3Wvp8YD/E41493juCkcQyXIEn3x02M5w3tFS/1zDGCoVCCb0v4UlzX+DIwGX/yRG6mWJXTpC4os8Dg8AnySekzZv63+YIXc/Rc4bEni9JLE+9CgZ2cbHnUZCiiWIYXQPJD+VXixIx9CgUinY0H0X58Ywj1lHaN7X7MtZOQ9XyBP4p4Gvk4yjn5+rrqHu/K3LFAvc1OcG5LQTSoG0Cgxbs1YbzlrmkNZoFUKFQQleQj1PcdOaG19Rj5Ez9V4Q/6/Ya+S7Aju6dOn9z08597PlZ88AcIT6QoWLPjVziRnqRBSMXvigUCiV0RYE44NnnOGAFYfOv+6s6K8ArdP7mDR9CVjsKhuaGjT2PYxh9DGZcbcDCiFpbFAoldEXB4G9pewT4MOEdnbxwsJd2dUfGErDHh489HwCiKwxfesYyXDF66Y5CoYSuKCS86f1bwO2E9Ub3rLLbhqSjCIl67PnCl0C8v4s9D5jqtQrY78uPS5XMFQoldEVh+aB+d/rnApftCf1FjmBS1Ns9x30hPVYuTrGBBDKf6rV2Dyz7naZ6VSiU0BXl0NIN8GMk93scSJv25L0VMFe7OS+MJJbhQbDHiDYdbJ9wqV65WIhcU70qFEroijJo6TGwDvhJfTMPhk2Qe9lRDT30wF3qSPaJ18DgDlALFXuOS/VaheiSHOaEQqGErl2gyBEGuCYg8XpTvgE2V0LPA0sQJzVzAkQ2IOkmMGgg/bXhK/dpqleFIjw0U5wiL/i87ncidtsBwrhLeyeqzbWLQ2vn1hhMYvnAlmDeDGMmXOy5lZBzIk31qlCohq4oHT8IHgYebfhdiHLnqIYeGosceQ+8DWZsDGktUP9aiCswugrsle5d6gynUCihK0pE6AYYQ+LSQxG6xybaxcHhY8/f4/waAwlLNoEBC/bnhsXLNdWrQqGErijv/FqWA6HP0u4NKX0tiCX2/LSXQrwPVAPHnlsDuFSvC7TDFQoldEXJ4DW8FTmUrYQeFD6fujkOBqOwseeVCEYfgoHrxOHuaD07VyiU0BUlxeocylSHzmDaOcYwUrOcNRPs0eFjzwcALjecs05TvSoCIMlnGRSyLCV0ReGwLocyh7RbQ2E4FlN47VAYeoFcxBIs9jwS832kqV4VoTAasCxvRZwZsMzZ3RI4yq7lDKhQUgrkYWLVcQ+GpdaAtdjjwdh6iFkITWoghrE7YbPf+7A47W9FARWEbQPsVZ50t2sQFkJgbS8Tuu+oTd3GHvI6qBQ1CSr6BC7BS2I5a1uovT587HkM8ANxuKMC1LTXFW0ipE+OVwx2BubR+rXP/nrnIWD3HAh9ZTNlllXL8Y16YQ4a4FrCmnQ6gfU5lBnSBJWHeVyJIeiGVj0aZswKG3seVWB0FFiSwzpV9C/+HphLEiSvxavcz3GL68gA+wIvcHM9JL8um450Ulbs02DqCIFV1NOLlkVTz4PQtwlY1rY51G8tigBYlFgJKTsubOw5qcSepzcYvnq/pnpVhBESAXgoJ/46g9atvd5SfFYOnATwQC8Tupd+DgvYDj8Ay0vYN6vCa2zsmpFeW4W/dW1+Dn26CkWbE94neDl9b6i8DMZSgsWeWyccmIt8zlftcUWgPfoBxEIXBSLO2O1VhwDHI2Eeg03O2Qjx5aoCxwBHOX4KlcPBl/PXZgSFMi6yiuuwNwMvcQMRBZ4sUK6Uoo8HJnTrSHinNuaJ/8yOTjiwgefbct3f2kU29nzAX3wTaOONYxhdARv9RMLURtQZThFSQ384sCbs7xb4N+BtSIZLb6mtTPD4NVN1n/lW5jPBpGLgKeC+jDLbM4TunWpmA18irDOcx70lnOCPBB7PxEmdJ1K/CrUVydIC/+jKSgIuvGyb1YGxtYnjYs9PmQ28PWzs+bOpXn9q+OxKy6Wxxp4rAu13sSPbu5ohuGnAuGcIuMwRu1dEahM8FtgD+Ib7zIxMOSHg27YUcdab0iLRLS930/A083+p68RZwKWIV2JC0PSUAPz/EhGFr+ODrm8qgYSc2PX3acB3gXsQE9RYk5/3/zvflRHKBOW1/FrGkqJE0RKGY8tIAvGbYGhrWJ+E824ngtRAdKHVy3MU4bkD4FfAkTmU7feTk4D3A7cBtyMm75Xuf+Yilse93JMl2pDz3Zd5fYMVoXCEnrjKVptskMergXOAlwcmc08UT2cIvQwOPFkT1GOId2UIQvcTexZwBfAG4P6GOWMbJrF/Z82R+YuA/3RlhDJD+bY9RniTW78hldjz9AQJLws2JV2q1+r9wI3yO031qgg3b93XX7i9Jg5cvslwVAzs556p+CzOoa2+zJ80u9d1y+S+ERJDvpn7mn3muK9zHUEdAJwJXOcklZfn0IF+ktwBPEE4Z4tOEHqEhNndHZjgvDT4YuBm4D2IOcqbmxL399R9738/5P73ZmdFCRm+4dt2N+LZX5ZxKtikEY9zy8LtIT5Y5GoTOtXrEsPiURhWc7siNKFHyNHorRlCzYNMbcPe1vh4xTTOqZ0g5vbbaNJBudMaun/f/wU+OsWGHDnin9GwoefRgb4OP2vWtFEg+LreCLwxMMH5srcGvgN8HLjKLaS/OYsGyFWm2yNhhG8AdmlYfKHH6aYSjlMB54w9BoaGYF0NTKC9wMTiLZ/8oGFjUihC70sXAPvn+J5WY9JDEXoFOZ/3x6lT5t7olsl9Ns3nu/VSku/c0GdyXkCoIublsm1Cvq5XAf8vhwkYZQSpXTJkPVWd8ghV8lLzVYGtEX2GkcSyIIb0WLdHBHSmHIhh7L/gvLtcqlcldEVoeD5YAowgqVZDKw9FsEIsB77NNMKHm+mAPJxa7DQeHzYQ59h5AL8E/kzdIaxMg2+A/6Z+/h/aBGUyUnHW1NQodNUyk9HksIhxbbyL9mPk+xISe46F570SBnaFahrO3O5TvZrvyzsWxdrjipz4I0aSSy2i7jTdK/B76KcRR7ymjxabWch5pNg003g6AYOEwZUVXgjx0lxemmuUEa5MQ//F7m9RjovYuDaGTNzQZ1jg94zjXRcGjD2PKrB+HdQubxCWFYrQ8A5x30GO4Co9IuAnri23A+cxzWPFqAnNvJrZUHsN3rnuWvdEJZ0U3gT1XSReMe6x8fLOfytcG1U7b60TjeHoxLJwDpi3OGe4UJnhXOw51xnOf0hTvSo6tC8AvA9YTfl9ary1dR31jHXT4t5IJwM16vl3TYnbEgFPOktDrxGezwZ4tmujere3hGFH3unhMLSZ3HsebM4bSfVqL9RUr4oOEmCEHJUeS906WUZSt5l9/AQkkmfax7/9vOi8yeZfkXPZuOQk6Cf3l5E0gRV6w+TpvT3/jOQgUM/29voSsMcHTrLoUr2uXw7m55rqVdFhYb8CXIkkgolLqND4usbAKUjitJaOEPqV0KtIsOwPgc/0AJl7Cc8gjiInZjZwW/I2efJ+v2ubQbXzFjrSx56f+mKID4SxgLn1bSLLyVxpWPy0pnpVdEE5qwDfBN6NJLaKqadnLfL+5hXLKmJmP58mQ9SU0Dck85vc4PeSxud9Am4EPtTOxCjQZK+4ttzYI4JXt+DWevQuGBwQEg6mokfOQHSR/LhEe1vRLVL/PpJR9B7qF6gUjdj93uYjuJYCByH+QW3t2f1E6D6j2QASx/xmxPmAHtP4vAnqi8iZ80AJJNXxJrwfqy+5tvSKF2s3OtNI7PlJA2DfFTb23KYwEMHYH2Hdb8TxbomOk6KbpP47JF3r55GMklli76byljYQ+XpXx32BW0IoYP1A6F4aipyGtxi5R70XvCKn0tQ/CHw2M6GTktTdT/jPAv+smnm7WBCJCbxyIAzuHDb2nNTlp7rEcEG17ninUHSN1CNgDfAR4BXItaZr2TCsNpu+Oi/eyabF9nxbAZ5BMsDt5eq4hvoRQVuo9PDA+jzj/u7avyKm2yvY8Aa3XhVifKz2xxCHsnORVLqeMKMCjpdPGPEMkr//G9Q9PfVMtm1Ex0Pk50Ygc7uJYCyB+OLMOOZhZLAB5kCIzxehHhSoHUVcl9lMlfcgYW2fBt6F3Fv+0nG4L5ssy0zwdaJxbPw6UVbTO5BrVn9A/bKrOEP8baOXCN02EFnknieQAP1zkIvi+4UgbEZT/w/EDHUO8NrMBPZSo+liHdPMxAbJ2HcW9bAN1czb6mBrDCaxnLI18FaoGUkAE2LIU2DIwLqbDF/7Qz6x56mByEi8fLt1tsYZ5VrZ9wzhcnubLu6/vh0h3h03fC3i/uf3t78AnwQ+BewJHIKcte8BPL/FNpgp3v8wktXyBiTPyR0NfWdD72+VUu5Rz5UysxKR1zzvBi5EHA2WZTqx3wjCk/rdwOuAdyJm7D0z/1PLLPSoA+OXJXG/kO4EvoA4tfTrWOW0fwPEayE9yMWeB5JnIws2hoFH5eeRgELyEh9i91+Q7CVpZUMUbw2YGjy62vXOVIX6ufpbxERqAw5MFTEFd0Jr92vpGsQMnQZsx2im/KIpSmlGcYncXvd793wesVq+CLkZcmdgB2BbYAvk1s+NgEHEnyfO7Jf+mug1wCrgceBRxBL8JyR0+G+Z8c1ybjCNfDoShj9fvgG50SavO1+nI1VOlg52zJlXrgV+DPyGDeP78tDKfR+90L17iLABvi9z5YY4689eshIDRwLvBQ5G7iyngeBp6G/TxJyZyAxlJxAg1wK/QsJNfkT9OKCoxyG/dxJ9iIsgvAPPScgZX5kjEhSKMkm42bsp0in+d8iR+USEPjYFr8SZ/Sz3Pa0ZDX0O9XPoIqCKmM4fc9LQPc6UcaczqzS2L+mApueveu3G+ExXUvWa7xXu2QE4FHg9sLeTTivTIGwmIPyJiP8R5H7fX7jn/obJn1Dc45C5AcfElzOzExUXT/fhnI5WFlkjZ9ylqXcLRwN53S3RacG1V9rRxpTawEo4nrJoMwrgevdM1adRw+f9k3R6cCf7mwXeCjyPoI400zJJrUecpFYjubxXIOk/V02yUVo6c07u+2hjxOEitAXjYtfe0MlUTEZjzy7E2cj1qLsDuzkT1HYZ89PMJtqYIOGATyH+Cw86E9RS5Ea4PzozVVYYMpTDr+EdwOaB1oJ32LwW+AOaAU+hKKI236yQUKoKFxVxhuzKmsO324gy5D6RNDkL2MQJLrOBGYgJasj9fTQjfK1xwtfTPPf8qHHcUh0zhUKh6ByhxwUh/vGc4YqEPI4kOm1+bnSMC2Eyys6flOKGutCltaBCjUKhUA1d0fF50mpcpkKhUCgUCoVCoVAoFAqFQqFQKBQKhUKhUCgUCoVCoVAoFAqFQqFQNIf/AZpygpysbjqGAAAAAElFTkSuQmCC" alt="Distrito" style="height:32px;width:auto;margin-top:8px;">
+  </div>
+</div>
+
+</div>
+
+<div id="modal-overlay" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;">
+
+  <div id="modal-pd-note" class="modal-card" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px 40px;max-width:600px;width:90%;position:relative;">
+    <button onclick="closeModal(event)" style="position:absolute;top:18px;right:18px;background:none;border:none;color:var(--fg3);font-size:22px;cursor:pointer;line-height:1;padding:6px;">✕</button>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:8px;">Confidencial — Nota de acompanhamento</div>
+    <div id="pd-note-name" style="font-size:19px;font-weight:700;color:var(--fg1);margin-bottom:18px;"></div>
+    <div id="pd-note-text" style="font-size:14.5px;color:var(--fg2);line-height:1.6;"></div>
+  </div>
+
+  <div id="modal-perguntas" class="modal-card" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px 40px;max-width:800px;width:90%;max-height:82vh;overflow-y:auto;position:relative;">
+    <button onclick="closeModal(event)" style="position:absolute;top:18px;right:18px;background:none;border:none;color:var(--fg3);font-size:22px;cursor:pointer;line-height:1;padding:6px;">✕</button>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:20px;">Pesquisa de Clima — perguntas, bloco a bloco</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="q-item" data-i="0" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(0)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Liderança Direta</span></div>
+          <span id="q-icon-0" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-0" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Sinto que a minha liderança direta está alinhada com os valores do Distrito.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Tenho satisfação em relação ao nível de conhecimento técnico da minha liderança direta.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Tenho satisfação em relação à qualidade do relacionamento com a minha liderança direta.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">4</span><span>Recebo feedbacks com a frequência que preciso da minha liderança direta.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">5</span><span>Quando recebo feedback da minha liderança direta, ele é claro e me ajuda a evoluir.</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "Algo que você queira destacar sobre sua liderança direta?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="1" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(1)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">C-Levels</span></div>
+          <span id="q-icon-1" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-1" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Confio nas decisões tomadas pelos C-Levels do Distrito.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Os C-Levels comunicam a estratégia da empresa de forma clara.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Sinto que os C-Levels são transparentes sobre os desafios e resultados da empresa.</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "Algo que você queira destacar sobre os C-Levels?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="2" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(2)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Cultura e Segurança Psicológica</span></div>
+          <span id="q-icon-2" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-2" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Os valores do Distrito me representam.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>No Distrito, sinto que pertenço a este lugar.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Sinto que sou ouvido(a) quando expresso uma ideia ou opinião.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">4</span><span>Sinto segurança para assumir um risco ou admitir um erro no meu time, sem medo de julgamento.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">5</span><span>Me sinto confortável em utilizar o Canal 'Bora Conversar' quando necessário.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">6</span><span>Me sinto confortável em utilizar o Canal de Denúncia quando necessário.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">7</span><span>No dia a dia, tenho uma rotina de trabalho equilibrada.</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "Algo que você queira destacar sobre a cultura ou o clima do Distrito?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="3" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(3)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Comunicação e Pertencimento à Empresa</span></div>
+          <span id="q-icon-3" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-3" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Me sinto "por dentro" dos acontecimentos e decisões da empresa.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>As comunicações internas do Distrito chegam até mim de forma clara e no tempo certo.</span></li>
+            </ul>
+            <div style="font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório sobre este bloco</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="4" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(4)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Carreira e Desenvolvimento Profissional</span></div>
+          <span id="q-icon-4" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-4" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Sinto que evoluo constantemente no Distrito, com oportunidades reais de desenvolvimento.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Tenho espaço para ser protagonista da minha carreira no Distrito.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Tenho satisfação com minhas atividades e responsabilidades atuais.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">4</span><span>Sinto motivação para continuar evoluindo junto com a empresa.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">5</span><span>Sei quais são minhas responsabilidades e as expectativas sobre meu trabalho estão claras.</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "Algo que você queira destacar sobre sua carreira ou desenvolvimento?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="5" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(5)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Reconhecimento</span></div>
+          <span id="q-icon-5" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-5" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Sinto que meu trabalho é reconhecido e valorizado pela minha liderança.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Sinto que meu trabalho é reconhecido pelos meus pares e colegas de time.</span></li>
+            </ul>
+            <div style="font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório sobre este bloco</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="6" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(6)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">7</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Remuneração e Benefícios</span></div>
+          <span id="q-icon-6" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-6" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Tenho satisfação com os benefícios oferecidos pelo Distrito.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Meu atual nível salarial reflete o meu grau de responsabilidade.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Tenho satisfação com a minha remuneração atual.</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "Algo que você queira destacar sobre remuneração ou benefícios?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="7" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(7)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">8</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Ferramentas e Recursos de Trabalho</span></div>
+          <span id="q-icon-7" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-7" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Tenho as ferramentas e recursos necessários para desempenhar bem o meu trabalho.</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Os processos internos do meu time/área funcionam de forma eficiente.</span></li>
+            </ul>
+            <div style="font-size:12.5px;color:var(--brand);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário obrigatório sobre este bloco</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="8" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(8)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">9</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">eNPS — métrica de fechamento (0 a 10)</span></div>
+          <span id="q-icon-8" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-8" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>Em uma escala de 0 a 10, o quanto você recomendaria o Distrito como um bom lugar para trabalhar para um(a) amigo(a) ou colega de profissão?</span></li>
+            </ul>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg3);font-weight:700;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">Comentário opcional <span style="color:var(--fg3);font-weight:400;font-style:italic;">— "O que mais pesou na sua nota?"</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-item" data-i="9" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <div onclick="qItemToggle(9)" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;cursor:pointer;">
+          <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:12px;font-weight:700;color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">10</span><span style="font-size:15px;font-weight:700;color:var(--fg1);">Espaço aberto final (opcional)</span></div>
+          <span id="q-icon-9" style="color:var(--fg3);font-size:12px;transition:transform .2s;">▾</span>
+        </div>
+        <div id="q-body-9" style="max-height:0;overflow:hidden;transition:max-height .25s ease;">
+          <div style="padding:0 18px 15px 52px;">
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;">
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">1</span><span>O que mais te deixa satisfeito(a) hoje em trabalhar no Distrito?</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">2</span><span>Se você pudesse mudar uma coisa no Distrito hoje, o que seria?</span></li>
+              <li style="display:flex;align-items:flex-start;gap:11px;font-size:13.5px;color:var(--fg1);line-height:1.5;"><span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--fg3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px;">3</span><span>Tem algo que você não teve espaço de dizer nas perguntas anteriores e gostaria de compartilhar?</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-fechadas" class="modal-card" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:40px 44px;max-width:560px;width:90%;position:relative;">
+    <button onclick="closeModal(event)" style="position:absolute;top:18px;right:18px;background:none;border:none;color:var(--fg3);font-size:22px;cursor:pointer;line-height:1;padding:6px;">✕</button>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:24px;">Vagas fechadas</div>
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;">
+        <div><div style="font-size:17px;font-weight:700;color:var(--fg1);">Felipe Correia</div><div style="font-size:14px;color:var(--fg2);">Líder em AI</div></div>
+        <div style="text-align:right;flex-shrink:0;"><div style="font-size:11.5px;color:var(--fg3);">AI Factory</div><span style="font-size:13px;color:var(--brand);font-weight:700;white-space:nowrap;">início 01/09</span></div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;">
+        <div><div style="font-size:17px;font-weight:700;color:var(--fg1);">Guilherme Berlim</div><div style="font-size:14px;color:var(--fg2);">AI Strategy Manager</div></div>
+        <div style="text-align:right;flex-shrink:0;"><div style="font-size:11.5px;color:var(--fg3);">AI Factory</div><span style="font-size:13px;color:var(--brand);font-weight:700;white-space:nowrap;">início 01/09</span></div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;">
+        <div><div style="font-size:17px;font-weight:700;color:var(--fg1);">João Gagliardi</div><div style="font-size:14px;color:var(--fg2);">Product Designer</div></div>
+        <div style="text-align:right;flex-shrink:0;"><div style="font-size:11.5px;color:var(--fg3);">AI Factory</div><span style="font-size:13px;color:var(--brand);font-weight:700;white-space:nowrap;">início 01/09</span></div>
+      </div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;">
+        <div><div style="font-size:17px;font-weight:700;color:var(--fg1);">Jaqueline Costa</div><div style="font-size:14px;color:var(--fg2);">Analista Administrativo Pleno</div></div>
+        <div style="text-align:right;flex-shrink:0;"><div style="font-size:11.5px;color:var(--fg3);">Financeiro</div><span style="font-size:13px;color:var(--brand);font-weight:700;white-space:nowrap;">início 08/09</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-abertas" class="modal-card" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px 40px;max-width:600px;width:90%;position:relative;">
+    <button onclick="closeModal(event)" style="position:absolute;top:18px;right:18px;background:none;border:none;color:var(--fg3);font-size:22px;cursor:pointer;line-height:1;padding:6px;">✕</button>
+    <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);margin-bottom:20px;">Vagas em aberto</div>
+
+    <div style="display:flex;align-items:flex-start;gap:32px;">
+      <svg width="160" height="160" viewBox="0 0 180 180" style="flex-shrink:0;">
+        <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg3)" stroke-width="20"/>
+        <circle id="vg-seg-0" class="vg-seg" cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="20" stroke-dasharray="0 440" stroke-dashoffset="0" transform="rotate(-90 90 90)" style="transition:stroke-dasharray 1s cubic-bezier(.22,1,.36,1);"></circle>
+        <circle id="vg-seg-1" class="vg-seg" cx="90" cy="90" r="70" fill="none" stroke="#f2749a" stroke-width="20" stroke-dasharray="0 440" stroke-dashoffset="-147" transform="rotate(-90 90 90)" style="transition:stroke-dasharray 1s cubic-bezier(.22,1,.36,1) .1s;"></circle>
+        <circle id="vg-seg-2" class="vg-seg" cx="90" cy="90" r="70" fill="none" stroke="#999" stroke-width="20" stroke-dasharray="0 440" stroke-dashoffset="-220" transform="rotate(-90 90 90)" style="transition:stroke-dasharray 1s cubic-bezier(.22,1,.36,1) .2s;"></circle>
+        <circle id="vg-seg-3" class="vg-seg" cx="90" cy="90" r="70" fill="none" stroke="#5b8fb0" stroke-width="20" stroke-dasharray="0 440" stroke-dashoffset="-293" transform="rotate(-90 90 90)" style="transition:stroke-dasharray 1s cubic-bezier(.22,1,.36,1) .3s;"></circle>
+        <circle id="vg-seg-4" class="vg-seg" cx="90" cy="90" r="70" fill="none" stroke="#555" stroke-width="20" stroke-dasharray="0 440" stroke-dashoffset="-366" transform="rotate(-90 90 90)" style="transition:stroke-dasharray 1s cubic-bezier(.22,1,.36,1) .4s;"></circle>
+        <text x="90" y="83" text-anchor="middle" fill="var(--fg1)" font-size="36" font-weight="700" font-family="'Red Hat Display'">6</text>
+        <text x="90" y="106" text-anchor="middle" fill="var(--fg3)" font-size="11" font-family="'Red Hat Display'">vagas</text>
+      </svg>
+
+      <div style="display:flex;flex-direction:column;gap:12px;flex:1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;"><span style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:3px;background:var(--brand);flex-shrink:0;"></span><span style="font-size:14.5px;color:var(--fg1);font-weight:700;">2 Full-stack</span></span><span style="font-size:11.5px;color:var(--fg3);white-space:nowrap;">AI Factory</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;"><span style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:3px;background:#f2749a;flex-shrink:0;"></span><span style="font-size:14.5px;color:var(--fg1);font-weight:700;">1 Analista de BI</span></span><span style="font-size:11.5px;color:var(--fg3);white-space:nowrap;">AI Factory</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;"><span style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:3px;background:#999;flex-shrink:0;"></span><span style="font-size:14.5px;color:var(--fg1);font-weight:700;">1 AI Engineer Pleno</span></span><span style="font-size:11.5px;color:var(--fg3);white-space:nowrap;">AI Factory</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;"><span style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:3px;background:#5b8fb0;flex-shrink:0;"></span><span style="font-size:14.5px;color:var(--fg1);font-weight:700;">1 AI Engineer Sênior</span></span><span style="font-size:11.5px;color:var(--fg3);white-space:nowrap;">AI Factory</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;"><span style="display:flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:3px;background:#555;flex-shrink:0;"></span><span style="font-size:14.5px;color:var(--fg1);font-weight:700;">1 Analista de Inteligência de Mercado</span></span><span style="font-size:11.5px;color:var(--brand);white-space:nowrap;">Research</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const stage=document.getElementById('stage');
+const STAGE_W=1280,STAGE_H=720;
+function fitStage(){
+  const scale=Math.min(window.innerWidth/STAGE_W,window.innerHeight/STAGE_H);
+  const offX=(window.innerWidth-STAGE_W*scale)/2;
+  const offY=(window.innerHeight-STAGE_H*scale)/2;
+  stage.style.transform=`translate(${offX}px, ${offY}px) scale(${scale})`;
+}
+fitStage();
+window.addEventListener('resize',fitStage);
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+function rsCv(){cv.width=window.innerWidth;cv.height=window.innerHeight;}rsCv();window.addEventListener('resize',rsCv);
+const pts=Array.from({length:36},()=>{return{x:Math.random()*cv.width,y:Math.random()*cv.height,vx:(Math.random()-.5)*.13,vy:(Math.random()-.5)*.13,r:Math.random()*.8+.3,o:Math.random()*.25+.1}});
+(function dp(){ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(208,9,95,${p.o*.45})`;ctx.fill();});
+for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<75){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(208,9,95,${.025*(1-d/75)})`;ctx.lineWidth=.4;ctx.stroke();}}
+requestAnimationFrame(dp);})();
+
+const slides=document.querySelectorAll('.slide'),dots=document.querySelectorAll('.nd'),btnPrev=document.getElementById('nav-prev'),btnNext=document.getElementById('nav-next'),prog=document.getElementById('prog'),sct=document.getElementById('sct'),logoEl=document.getElementById('logo'),roadmapEl=document.getElementById('roadmap');
+let cur=0;const N=slides.length;let busy=false,wLock=false;
+
+function renderRoadmap(n){ roadmapEl.classList.remove('on'); }
+
+function countUpAll(s){
+  s.querySelectorAll('.countup').forEach(el=>{
+    const target=parseFloat(el.dataset.target),prefix=el.dataset.prefix||'',suffix=el.dataset.suffix||'';
+    const isDecimal=el.dataset.target.includes('.');
+    let n=0;const step=target/24;
+    el.textContent=prefix+'0'+suffix;
+    const t=setInterval(()=>{n+=step;if(n>=target){clearInterval(t);el.textContent=prefix+target.toString().replace('.',',')+suffix;}else{el.textContent=prefix+(isDecimal?Math.round(n*10)/10:Math.round(n))+suffix;}},28);
+  });
+}
+
+function goTo(n){if(busy||n===cur||n<0||n>=N)return;busy=true;slides[cur].classList.remove('active');slides[cur].classList.add('out');const prev=cur;cur=n;setTimeout(()=>slides[prev].classList.remove('out'),220);slides[cur].classList.add('active');dots.forEach((d,i)=>d.classList.toggle('on',i===cur));btnPrev.disabled=cur===0;btnNext.disabled=cur===N-1;prog.style.width=((cur/(N-1))*100)+'%';sct.textContent=(cur+1)+' / '+N;logoEl.style.display=cur>=1?'none':'block';renderRoadmap(cur);revealSlide(slides[cur]);animateTimelineIfPresent(slides[cur]);setTimeout(()=>busy=false,440);}
+
+function animateTimelineIfPresent(slideEl){
+  const tlDots=slideEl.querySelectorAll('.tl-dot');
+  tlDots.forEach((d,i)=>setTimeout(()=>d.classList.add('filled'),300+i*220));
+}
+function revealSlide(s){s.querySelectorAll('.r').forEach(el=>el.classList.remove('in'));requestAnimationFrame(()=>requestAnimationFrame(()=>{s.querySelectorAll('.r').forEach(el=>el.classList.add('in'));countUpAll(s);}));}
+dots.forEach(d=>d.addEventListener('click',()=>goTo(+d.dataset.slide)));
+btnPrev.addEventListener('click',()=>goTo(cur-1));
+btnNext.addEventListener('click',()=>goTo(cur+1));
+document.addEventListener('wheel',e=>{if(wLock||busy)return;wLock=true;setTimeout(()=>wLock=false,700);(e.deltaY>0||e.deltaX>0)?goTo(cur+1):goTo(cur-1);},{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')goTo(cur+1);if(e.key==='ArrowLeft')goTo(cur-1);});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){d>0?goTo(cur+1):goTo(cur-1);}});
+
+renderRoadmap(0);
+const kbHint=document.getElementById('kbhint');
+if(kbHint){
+  setTimeout(()=>{kbHint.style.opacity='1';},900);
+  setTimeout(()=>{kbHint.style.opacity='0';},3900);
+}
+revealSlide(slides[0]);
+
+const MAX_HEIGHTS = {};
+document.querySelectorAll('[id$="-toggle-btn"]').forEach(btn=>{
+  const prefix = btn.id.replace('-toggle-btn','');
+  const panel = document.getElementById(prefix+'-panel');
+  const icon = document.getElementById(prefix+'-toggle-icon');
+  if(!panel) return;
+  let open=false;
+  btn.addEventListener('click',()=>{
+    open=!open;
+    panel.style.maxHeight = open ? (MAX_HEIGHTS[prefix]||'200px') : '0';
+    if(icon) icon.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+});
+
+function openModal(id){
+  const overlay=document.getElementById('modal-overlay');
+  if(!overlay) return;
+  overlay.style.display = 'flex';
+  document.querySelectorAll('.modal-card').forEach(m => m.style.display = 'none');
+  const card = document.getElementById(id);
+  card.style.display = 'block';
+  countUpAll(card);
+}
+function closeModal(e){
+  if(e.target.id === 'modal-overlay' || e.target.tagName === 'BUTTON' || e.target.textContent === '✕'){
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+}
+
+function animateVagasRing(){
+  document.getElementById('vg-seg-0').style.strokeDasharray = '147 440';
+  document.getElementById('vg-seg-1').style.strokeDasharray = '73 440';
+  document.getElementById('vg-seg-2').style.strokeDasharray = '73 440';
+  document.getElementById('vg-seg-3').style.strokeDasharray = '73 440';
+  document.getElementById('vg-seg-4').style.strokeDasharray = '73 440';
+}
+function vgReset(){
+  document.querySelectorAll('.vg-seg').forEach(s=>s.style.strokeDasharray='0 440');
+}
+
+const pcItemState = {};
+function pcItemToggle(i){
+  const wasOpen = pcItemState[i];
+  Object.keys(pcItemState).forEach(k=>{
+    pcItemState[k] = false;
+    const d = document.getElementById('pc-desc-'+k);
+    const ic = document.getElementById('pc-icon-'+k);
+    if(d) d.style.maxHeight = '0';
+    if(ic) ic.style.transform = 'rotate(0deg)';
+  });
+  if(!wasOpen){
+    pcItemState[i] = true;
+    document.getElementById('pc-desc-'+i).style.maxHeight = '110px';
+    document.getElementById('pc-icon-'+i).style.transform = 'rotate(180deg)';
+  }
+}
+
+let pcScaleOpen = false;
+function pcScaleToggle(){
+  pcScaleOpen = !pcScaleOpen;
+  document.getElementById('pc-scale-panel').style.maxHeight = pcScaleOpen ? '90px' : '0';
+  document.getElementById('pc-scale-arrow').textContent = pcScaleOpen ? '▴' : '▾';
+  document.getElementById('pc-scale-chip').style.borderColor = pcScaleOpen ? 'var(--border-brand)' : 'var(--border)';
+}
+
+let rcOpen = false;
+function rcToggle(){
+  rcOpen = !rcOpen;
+  const body = document.getElementById('rc-body');
+  const icon = document.getElementById('rc-icon');
+  body.style.maxHeight = rcOpen ? body.scrollHeight+'px' : '0';
+  icon.style.transform = rcOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+
+const qItemState = {};
+function qItemToggle(i){
+  const wasOpen = qItemState[i];
+  Object.keys(qItemState).forEach(k=>{
+    qItemState[k] = false;
+    const b = document.getElementById('q-body-'+k);
+    const ic = document.getElementById('q-icon-'+k);
+    if(b) b.style.maxHeight = '0';
+    if(ic) ic.style.transform = 'rotate(0deg)';
+  });
+  if(!wasOpen){
+    qItemState[i] = true;
+    const body = document.getElementById('q-body-'+i);
+    body.style.maxHeight = body.scrollHeight+'px';
+    document.getElementById('q-icon-'+i).style.transform = 'rotate(180deg)';
+    setTimeout(()=>{
+      const item = body.closest('.q-item');
+      if(item) item.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 260);
+  }
+}
+
+
+const pdPeople = [{"n": "Aêgla Debra Nunes Benevides", "a": "Estratégia e Transformação", "c": "Analista de Estratégia e Transformação", "s": "Sênior", "t": "Crítico", "g": "3"}, {"n": "Alexandre Luiz Bianchi", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Regular", "g": "5"}, {"n": "Allan Jhonny Pamponet do Carmo", "a": "Tecnologia", "c": "Lider Técnico Sênior", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "7"}, {"n": "Amarílis da Graça de Oliveira Beltrão e Silva", "a": "Marketing", "c": "Analista de Conteúdo Pleno", "s": "Pleno", "t": "Não podemos perder", "g": "3"}, {"n": "Ana Luiza Silva", "a": "Financeiro", "c": "Analista Financeiro Pleno", "s": "Pleno", "t": "Crítico", "g": "3"}, {"n": "Arthur Dorigueto Delevedove", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Não podemos perder", "g": "5"}, {"n": "Bárbara Cristina Souza Guimarães", "a": "Ecossistema", "c": "Executiva de Vendas", "s": "Pleno", "t": "Regular", "g": "3"}, {"n": "Beatriz Berruezo Ribeiro", "a": "Research", "c": "Analista de Research Junior", "s": "Junior", "t": "Crítico", "g": "1"}, {"n": "Bernardo Moniz Marques", "a": "Ecossistema", "c": "Analista de Ecossistema", "s": "Sênior", "t": "Ótimo", "g": "3"}, {"n": "Breno Osvaldo Funicheli", "a": "AI Factory", "c": "Líder em AI", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "5"}, {"n": "Bruna Alves dos Reis Sposito", "a": "Educação", "c": "Executiva de Vendas", "s": "Junior", "t": "Ótimo", "g": "3"}, {"n": "Camila Melo da Silva", "a": "CX Ops", "c": "Coordenadora de CX Ops", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "5"}, {"n": "Carlos Augusto Monteiro Oeiras", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Novo", "g": "5"}, {"n": "Carlos Roberto de Moura", "a": "Tecnologia", "c": "Desenvolvedor Sênior", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Caroline Moreira", "a": "People", "c": "Coordenadora de Gente e Gestão", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "5"}, {"n": "Diego Augusto Prazeres Duque da Silva", "a": "AI Factory", "c": "Diretor de Tecnologia", "s": "Diretor", "t": "Não podemos perder", "g": "11"}, {"n": "Érica Pardim Camanducci", "a": "Marketing", "c": "Analista de Marketing Sênior", "s": "Sênior", "t": "Ótimo", "g": "3"}, {"n": "Everson Henrich da Silva", "a": "AI Factory", "c": "Data Engineer Sr.", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Fabiane Rebello Monteiro", "a": "Clientes", "c": "Product Manager Junior", "s": "Sênior", "t": "Ótimo", "g": "3"}, {"n": "Fabricio Freitas Koga", "a": "Jurídico", "c": "Gerente Jurídico", "s": "Coordenadores/Gerentes", "t": "Regular", "g": "9"}, {"n": "Felipe Lopes Ribeiro", "a": "Financeiro", "c": "Gerente Financeiro", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "9"}, {"n": "Gabriela Almeida Peres", "a": "Marketing", "c": "Estágio", "s": "Estágio", "t": "Ótimo", "g": "1"}, {"n": "Gabriela Elias Leite", "a": "Educação", "c": "Especialista de Educação Executiva", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Giovanna Miranda Santos", "a": "Estratégia e Transformação", "c": "Analista de Estratégia e Transformação", "s": "Junior", "t": "Regular", "g": "1"}, {"n": "Giulia Luiza Oliveira Laseri", "a": "Estratégia e Transformação", "c": "AI Strategy Manager", "s": "Gerente", "t": "Regular", "g": "7"}, {"n": "Gleica Pires Reinert", "a": "AI Factory", "c": "Forward Deployed Engineer", "s": "Sênior", "t": "Novo", "g": "5"}, {"n": "Gustavo Luiz de Araujo e Silva", "a": "Clevel", "c": "CRO", "s": "Clevel", "t": "Não podemos perder", "g": "11"}, {"n": "Gustavo Marques dos Santos Gierun", "a": "Clevel", "c": "CEO", "s": "Clevel", "t": "Não podemos perder", "g": "11"}, {"n": "Gustavo Teodozio Dias Sampaio", "a": "AI Factory", "c": "AI Engineer Jr.", "s": "Júnior", "t": "Novo", "g": "1"}, {"n": "Hudson Barroso Lucas", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Humberto Francisco Rodrigues Junior", "a": "Clientes", "c": "AI Director", "s": "Diretor", "t": "Ótimo", "g": "9"}, {"n": "João Vitor do Carmo", "a": "CX Ops", "c": "Analista de CX Ops", "s": "Pleno", "t": "Não podemos perder", "g": "3"}, {"n": "Karen Mayumi Higa", "a": "Vendas", "c": "Analista Pré-Vendas Sênior", "s": "Sênior", "t": "Regular", "g": "3"}, {"n": "Leonardo Daniel Pablo Torres", "a": "Clientes", "c": "Product Manager Pleno", "s": "Pleno", "t": "Crítico", "g": "3"}, {"n": "Leonardo de Bona Santos", "a": "Research", "c": "Coordenador de Research", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "5"}, {"n": "Letícia de Padua Perez", "a": "Marketing", "c": "Gerente de Marketing", "s": "Coordenadores/Gerentes", "t": "Não podemos perder", "g": "9"}, {"n": "Lina Raquel Sander Barreiros de Moraes de Oliveira", "a": "Vendas", "c": "Executiva de Vendas", "s": "Sênior", "t": "Regular", "g": "3"}, {"n": "Lincoln de Souza Pedroso", "a": "Marketing", "c": "Analista de Growth Pleno", "s": "Pleno", "t": "Regular", "g": "3"}, {"n": "Luiz Fernando Messias Bissoli", "a": "Clientes", "c": "Product Manager Sênior", "s": "Sênior", "t": "Novo", "g": "5"}, {"n": "Luiza Carreira Perez", "a": "Educação", "c": "Analista de Sucesso Educacional", "s": "Sênior", "t": "Crítico", "g": "3"}, {"n": "Marcela Botteri de Mello Oliveira", "a": "Clientes", "c": "AI Manager Pleno", "s": "Coordenadores/Gerentes", "t": "Regular", "g": "7"}, {"n": "Marcela da Conceição Lima", "a": "Ecossistema", "c": "Analista de Operações", "s": "Junior", "t": "Regular", "g": "1"}, {"n": "Mariana Lima de Vasconcelos Raso", "a": "Ecossistema", "c": "Gerente de Ecossistema", "s": "Sênior", "t": "Ótimo", "g": "7"}, {"n": "Mariane Marinho Dias Fernandes", "a": "Financeiro", "c": "Analista Administrativo Pleno", "s": "Pleno", "t": "Ótimo", "g": "3"}, {"n": "Marllon Felipe Muniz de Farias Alves", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Crítico", "g": "5"}, {"n": "Matheus Cordeiro de Morais", "a": "CX Ops", "c": "Analista de CX Ops", "s": "Sênior", "t": "Ótimo", "g": "3"}, {"n": "Matheus de Araujo Zacharias", "a": "Marketing", "c": "Designer Junior", "s": "Junior", "t": "Ótimo", "g": "1"}, {"n": "Matheus Muniz Damasco", "a": "AI Factory", "c": "AI Engineer Junior", "s": "Junior", "t": "Ótimo", "g": "1"}, {"n": "Maycon Morais Barbosa", "a": "Estratégia e Transformação", "c": "Especialista de Estratégia e Transformação", "s": "Especialista", "t": "Não podemos perder", "g": "5"}, {"n": "Milena Setubal Pedro", "a": "People", "c": "Tech Recruiter Pleno", "s": "Pleno", "t": "Novo", "g": "3"}, {"n": "Murilo Henrique Ialamov Pinto", "a": "Research", "c": "Estagiário", "s": "Estágio", "t": "Ótimo", "g": "1"}, {"n": "Patricia dos Santos José", "a": "Clientes", "c": "Product Manager Pleno", "s": "Pleno", "t": "Novo", "g": "3"}, {"n": "Patricia Miranda e Silva", "a": "AI Factory", "c": "Data Engineer Pleno", "s": "Pleno", "t": "Crítico", "g": "5"}, {"n": "Patrick Silva Ferraz", "a": "AI Factory", "c": "AI Engineer Sr.", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Pedro Henrique Muniz de Assis", "a": "Marketing", "c": "Analista de Conteúdo Junior", "s": "Junior", "t": "Ótimo", "g": "1"}, {"n": "Pedro Henrique Strazdas Marques", "a": "Marketing", "c": "Analista de Mídia e Performance Pleno", "s": "Pleno", "t": "Regular", "g": "3"}, {"n": "Pedro Oliveira Martins", "a": "Clientes", "c": "AI Manager Sênior", "s": "Coordenadores/Gerentes", "t": "Regular", "g": "9"}, {"n": "Pedro Vinícius Vieira Souza", "a": "Tecnologia", "c": "Desenvolvedor Frontend Pleno", "s": "Pleno", "t": "Regular", "g": "3"}, {"n": "Rafael Alves Mayer", "a": "AI Factory", "c": "AI Engineer Pleno", "s": "Pleno", "t": "Não podemos perder", "g": "5"}, {"n": "Roberta Vieira Senda", "a": "Clientes", "c": "Product Manager Junior", "s": "Pleno", "t": "Não podemos perder", "g": "3"}, {"n": "Ronaldo Tadashi Morita Takahashi", "a": "Tecnologia", "c": "CTO", "s": "Clevel", "t": "Ótimo", "g": "11"}, {"n": "Saulo de Souza Silva", "a": "Educação", "c": "Especialista de Educação Executiva", "s": "Especialista", "t": "Crítico", "g": "3"}, {"n": "Sophia Maria Rossetto Ferro", "a": "Marketing", "c": "Designer Pleno", "s": "Pleno", "t": "Ótimo", "g": "3"}, {"n": "Stefani Lima Primo", "a": "Estratégia e Transformação", "c": "Analista Estratégia e Transformação", "s": "Pleno", "t": "Ótimo", "g": "3"}, {"n": "Thaís de Oliveira Chehab", "a": "Clientes", "c": "Product Manager Junior", "s": "Pleno", "t": "Regular", "g": "1"}, {"n": "Thais Perim Parigi", "a": "Clientes", "c": "Product Manager Pleno", "s": "Sênior", "t": "Ótimo", "g": "3"}, {"n": "Thaísa Carvalho de Oliveira", "a": "Estratégia e Transformação", "c": "Analista Estratégia e Transformação", "s": "Sênior", "t": "Ótimo", "g": "5"}, {"n": "Victor Harano Alves", "a": "Educação", "c": "Gerente de Educação", "s": "Coordenadores/Gerentes", "t": "Ótimo", "g": "7"}, {"n": "Victor Hugo Leal da Costa", "a": "Estratégia e Transformação", "c": "Analista Estratégia e Transformação", "s": "Junior", "t": "Crítico", "g": "1"}, {"n": "Vitor Hugo Santos de Sousa", "a": "Clevel", "c": "COO", "s": "Clevel", "t": "Não podemos perder", "g": "11"}, {"n": "Vitoria Andrade", "a": "AI Factory", "c": "AI Engineer Jr.", "s": "Junior", "t": "Ótimo", "g": "3"}, {"n": "João Pedro Gagliardi", "a": "Clientes", "c": "Product Designer", "s": "Sênior", "t": "Novo", "g": "5"}, {"n": "Guilherme Berlim Gregoratto", "a": "AI Factory", "c": "AI Strategy Manager", "s": "Coordenadores/Gerentes", "t": "Novo", "g": "9"}, {"n": "Tiago Ávila", "a": "Clientes", "c": "AI Manager Sênior", "s": "Coordenadores/Gerentes", "t": "Novo", "g": "9"}, {"n": "Felipe Fernandes Correia", "a": "AI Factory", "c": "Líder em AI", "s": "Coordenadores/Gerentes", "t": "Novo", "g": "5"}];
+const pdLensConfig = {
+  t: { label: "Talento", colorMap: {
+      "Ótimo": "#4caf7d", "Não podemos perder": "#e24b4a", "Regular": "#999",
+      "Crítico": "#e2954a", "Novo": "#5b8fb0", "—": "#555"
+    } },
+  g: { label: "Grade", colorMap: null }
+};
+const pdTalentOrder = ["Ótimo", "Não podemos perder", "Regular", "Crítico", "Novo"];
+const pdSegIds = {
+  "Ótimo": "pd-seg-otimo", "Não podemos perder": "pd-seg-naopodemos", "Regular": "pd-seg-regular",
+  "Crítico": "pd-seg-critico", "Novo": "pd-seg-novo"
+};
+
+let pdCurrentLens = 't';
+let pdActiveTalentFilter = null;
+const pdAreas = [...new Set(pdPeople.map(p=>p.a))].sort();
+const pdSenioridades = [...new Set(pdPeople.map(p=>p.s))].sort();
+
+const pdSelArea = document.getElementById('pd-filter-area');
+pdAreas.forEach(a=>{
+  const opt = document.createElement('option');
+  opt.value = a; opt.textContent = a;
+  pdSelArea.appendChild(opt);
+});
+const pdSelSenioridade = document.getElementById('pd-filter-senioridade');
+pdSenioridades.forEach(s=>{
+  const opt = document.createElement('option');
+  opt.value = s; opt.textContent = s;
+  pdSelSenioridade.appendChild(opt);
+});
+
+const pdSelDim = document.getElementById('pd-filter-dim');
+const pdThDim = document.getElementById('pd-th-dim');
+const pdTbody = document.getElementById('pd-tbody');
+const pdCountEl = document.getElementById('pd-count');
+const pdSearchInput = document.getElementById('pd-search');
+const pdChartBox = document.getElementById('pd-chart-box');
+const pdLegendEl = document.getElementById('pd-legend');
+
+function pdPopulateDimFilter(){
+  pdSelDim.innerHTML = '<option value="">Todas</option>';
+  let values;
+  if(pdCurrentLens === 'g'){
+    values = [...new Set(pdPeople.map(p=>p.g))].sort((a,b)=>parseInt(a)-parseInt(b));
+  } else {
+    values = pdTalentOrder;
+  }
+  values.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = pdCurrentLens==='g' ? ('Grade '+v) : v;
+    pdSelDim.appendChild(opt);
+  });
+}
+
+function pdSetLens(lens){
+  pdCurrentLens = lens;
+  pdActiveTalentFilter = null;
+  document.querySelectorAll('.pd-lens-btn').forEach(b=>{
+    const active = b.dataset.lens===lens;
+    b.style.color = active ? 'var(--brand)' : 'var(--fg2)';
+    b.style.background = active ? 'var(--brand-dim)' : 'var(--bg2)';
+    b.style.borderColor = active ? 'var(--border-brand)' : 'var(--border2)';
+  });
+  pdThDim.textContent = pdLensConfig[lens].label;
+  pdChartBox.style.display = (lens === 't') ? 'flex' : 'none';
+  pdPopulateDimFilter();
+  pdSelDim.value = '';
+  pdRender();
+}
+
+function pdBaseFiltered(){
+  const q = pdSearchInput.value.trim().toLowerCase();
+  const fa = pdSelArea.value;
+  const fs = pdSelSenioridade.value;
+  return pdPeople.filter(p=>{
+    const matchQ = !q || p.n.toLowerCase().includes(q) || p.c.toLowerCase().includes(q);
+    const matchA = !fa || p.a === fa;
+    const matchS = !fs || p.s === fs;
+    return matchQ && matchA && matchS;
+  });
+}
+
+function pdUpdateDonut(base){
+  const counts = {};
+  pdTalentOrder.forEach(t=>counts[t] = base.filter(p=>p.t===t).length);
+  const total = base.length;
+  const circ = 440;
+  let offset = 0;
+  pdTalentOrder.forEach(t=>{
+    const len = total ? (counts[t]/total*circ) : 0;
+    const seg = document.getElementById(pdSegIds[t]);
+    seg.style.strokeDasharray = len.toFixed(1) + ' ' + circ;
+    seg.style.strokeDashoffset = (-offset).toFixed(1);
+    seg.style.opacity = (pdActiveTalentFilter && t !== pdActiveTalentFilter) ? '0.3' : '1';
+    seg.style.strokeWidth = (pdActiveTalentFilter && t !== pdActiveTalentFilter) ? '14' : '22';
+    offset += len;
+  });
+  document.getElementById('pd-donut-n').textContent = pdActiveTalentFilter ? counts[pdActiveTalentFilter] : total;
+  document.getElementById('pd-donut-l').textContent = pdActiveTalentFilter || 'Distriters';
+
+  pdLegendEl.innerHTML = pdTalentOrder.map(t=>`
+    <div onclick="pdToggleTalentFilter('${t}')" style="display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;padding:5px 8px;border-radius:8px;cursor:pointer;${pdActiveTalentFilter===t?'background:var(--brand-dim);border:1px solid var(--border-brand);':'border:1px solid transparent;'}">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span style="width:9px;height:9px;border-radius:3px;background:${pdLensConfig.t.colorMap[t]};flex-shrink:0;"></span>
+        <span style="color:var(--fg1);font-weight:500;">${t}</span>
+      </span>
+      <span style="color:var(--fg3);font-weight:700;">${counts[t]}</span>
+    </div>
+  `).join('');
+}
+
+function pdToggleTalentFilter(t){
+  pdActiveTalentFilter = (pdActiveTalentFilter === t) ? null : t;
+  pdSelDim.value = pdActiveTalentFilter || '';
+  pdRender();
+}
+
+const pdPersonNotes = {
+  "Saulo de Souza Silva": "Saulo sinalizou que terá alta médica em 31/08 e, após isso, realizará o exame de retorno com a D+ Saúde para validação de sua aptidão. Conforme sinalizado pelo Fabrício, ele terá estabilidade pelo período do afastamento previdenciário, limitada a 60 dias. De todo modo, ainda estamos aguardando a CCT 2026/2027 para confirmar a regra aplicável. Como ponto de atenção, o empregado poderá posteriormente buscar o reconhecimento judicial de eventual relação entre o afastamento/doença e o trabalho, especialmente diante das referências existentes nos documentos médicos."
+};
+
+function pdShowNote(name){
+  const note = pdPersonNotes[name];
+  if(!note) return;
+  document.getElementById('pd-note-name').textContent = name;
+  document.getElementById('pd-note-text').textContent = note;
+  openModal('modal-pd-note');
+}
+
+function pdRender(){
+  const base = pdBaseFiltered();
+  if(pdCurrentLens === 't'){
+    pdUpdateDonut(base);
+  }
+  const fd = pdSelDim.value;
+  const filtered = base.filter(p=>{
+    const matchD = !fd || p[pdCurrentLens] === fd;
+    return matchD;
+  });
+  pdCountEl.innerHTML = '<strong style="color:var(--brand);">' + filtered.length + ' pessoas</strong>';
+  if(filtered.length === 0){
+    pdTbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--fg3);font-size:13px;">Nenhum resultado encontrado.</td></tr>';
+    return;
+  }
+  const cmap = pdLensConfig[pdCurrentLens].colorMap;
+  pdTbody.innerHTML = filtered.map(p=>{
+    const val = p[pdCurrentLens];
+    let style;
+    if(cmap){
+      const col = cmap[val] || '#999';
+      style = `color:${col};background:${col}22;border:1px solid ${col}55;`;
+    } else {
+      style = `color:var(--brand);background:var(--brand-dim);border:1px solid var(--border-brand);`;
+    }
+    const hasNote = !!pdPersonNotes[p.n];
+    const nameCell = hasNote
+      ? `<span onclick="pdShowNote('${p.n.replace(/'/g, "\\'")}')" style="cursor:pointer;color:var(--fg1);font-weight:700;border-bottom:1px dashed var(--border-brand);padding-bottom:1px;">${p.n} <span style="color:var(--brand);font-size:11px;">●</span></span>`
+      : `<span style="color:var(--fg1);font-weight:700;">${p.n}</span>`;
+    return `
+    <tr>
+      <td style="padding:9px 16px;border-bottom:1px solid var(--border);">${nameCell}</td>
+      <td style="padding:9px 16px;border-bottom:1px solid var(--border);"><span style="font-size:11.5px;color:var(--fg2);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:2px 9px;white-space:nowrap;">${p.a}</span></td>
+      <td style="padding:9px 16px;border-bottom:1px solid var(--border);color:var(--fg1);">${p.c}</td>
+      <td style="padding:9px 16px;border-bottom:1px solid var(--border);"><span style="font-size:11.5px;font-weight:700;border-radius:10px;padding:2px 9px;white-space:nowrap;${style}">${val}</span></td>
+    </tr>
+  `;
+  }).join('');
+}
+
+pdSearchInput.addEventListener('input', pdRender);
+pdSelArea.addEventListener('change', pdRender);
+pdSelSenioridade.addEventListener('change', pdRender);
+pdSelDim.addEventListener('change', ()=>{ pdActiveTalentFilter = (pdCurrentLens==='t') ? (pdSelDim.value || null) : null; pdRender(); });
+
+pdPopulateDimFilter();
+pdRender();
+
+</script>
+</body>
+</html>
